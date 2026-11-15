@@ -7,8 +7,8 @@ TRAPSTATION OS stands on the work of others. Thank you.
 | [BBL JAM BOX](https://github.com/UnkleBlairy/BBL-JAM-BOX) 0.6.1 beta | Blair (blairysbeatlab) | GPL-3.0-only | The base firmware: groovebox workflow, 808 machines, sampler, FM engine changes, DJ filter and comb, sound and kit saves |
 | [Felucca](https://github.com/hugelton/Felucca) | Leo Kuroshita, Hügelton Instruments | GPL-3.0-only, MIT (engines) | The foundation: hardware layer, USB, update loader and installer, sequencer, effects and screen code |
 | [Felucca-Engines](https://github.com/hugelton/Felucca-Engines), [Fukiai](https://github.com/hugelton/Fukiai) | Hügelton Instruments | MIT | Engine interface and DSP helpers; icon font |
-| [Skiff](https://github.com/illuminus5/skiff) | illuminus5 | GPL-3.0-only | Chord follow (root detection), adapted in `firmware/src/trap_follow.c` |
-| [X0X](https://github.com/charlesvestal/fm1-x0x) | charlesvestal | GPL-3.0 | The second core's start, mailbox and guards |
+| [Skiff](https://github.com/illuminus5/skiff) | illuminus5 | GPL-3.0-only | Chord follow (root detection), adapted in `firmware/src/trap_follow.c`; an inspiration for the presets, the editor and the track layout |
+| [X0X](https://github.com/charlesvestal/fm1-x0x) | charlesvestal | GPL-3.0 | The second core's start, mailbox and guards; an inspiration for the 808 focus and the accent |
 | [Melodee](https://github.com/keremimo/melodee) | keremimo | GPL-3.0 | Dual-core findings |
 | [Jangada](https://github.com/zednaked/jangada) | zednaked | GPL-3.0 | The second core's audio split and hardening |
 | [FM-1-transporter](https://github.com/kurogedelic/FM-1-transporter) | Leo Kuroshita | – | Recovery hardware for a FM-1 that no longer starts |

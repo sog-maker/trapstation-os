@@ -74,6 +74,19 @@ Pages serves it (Settings > Pages > Deploy from a branch > `gh-pages`).
 A fork first points the README, the installer's source links and `fmhub.json` at its own repository:
 `tools/set_repo_url.sh sog-maker/trapstation-os`. Forks must also use their own name, logo and package identity.
 
+## The scene renderer (Trap Station Desktop)
+
+The desktop app's Ableton export bundles `render_scenes.exe`, a host build of the firmware's sequencer and engines.
+Its source is here: `tools/render_scenes.c` with the host layer `web/emu/felucca_web.c` and `web/emu/shim/`. After a
+`./build.sh` (for `build/gen`):
+
+```
+cc -O1 -ffp-contract=off -w -DFELUCCA_FM4=1 -DFELUCCA_SIMPLE=1 -Ibuild/gen -Ifirmware/src -Iweb/emu -Iweb/emu/shim \
+   -o build/render_scenes tools/render_scenes.c -lm
+```
+
+For Windows, the same with a MinGW-w64 `gcc` gives `render_scenes.exe`.
+
 ## Artwork
 
 The screen artwork comes from the approved design reference in [`docs/design/`](../design/) and the pinned exports in
