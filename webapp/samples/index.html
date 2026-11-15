@@ -9,8 +9,7 @@
 <title>TRAPSTATION Samples</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%23262B2B%22/%3E%3Crect x=%222%22 y=%226%22 width=%2212%22 height=%224%22 fill=%22%238E1C18%22/%3E%3C/svg%3E">
 <style>
-/* KASSETTE HELL, as the installer (tools/gen_ui_palettes.py CASS); Blair's BLB Pixel 7 Chunky (SIL OFL 1.1).
- * make_site.py puts the font and the logo in the page: one file */
+
 @font-face { font-family: "BLBPixel"; src: url("data:font/ttf;base64,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c2lnbi5CTEIgUGl4ZWwgNyBDaHVua3lSZWd1bGFyQkxCIFBpeGVsIDcgQ2h1bmt5IFJlZ3VsYXIgMS4wQkxCIFBpeGVsIDcgQ2h1bmt5IFJlZ3VsYXJWZXJzaW9uIDEuMEJMQlBpeGVsN0NodW5reS1SZWd1bGFyVGhpcyBGb250IFNvZnR3YXJlIGlzIGxpY2Vuc2VkIHVuZGVyIHRoZSBTSUwgT3BlbiBGb250IExpY2Vuc2UsIFZlcnNpb24gMS4xLiBodHRwczovL29wZW5mb250bGljZW5zZS5vcmdodHRwczovL29wZW5mb250bGljZW5zZS5vcmcAQwBvAHAAeQByAGkAZwBoAHQAIAAyADAAMgA2ACAAYgBsAGEAaQByAHkAcwBiAGUAYQB0AGwAYQBiAC4AIABPAHIAaQBnAGkAbgBhAGwAIABkAGUAcwBpAGcAbgAuAEIATABCACAAUABpAHgAZQBsACAANwAgAEMAaAB1AG4AawB5AFIAZQBnAHUAbABhAHIAQgBMAEIAIABQAGkAeABlAGwAIAA3ACAAQwBoAHUAbgBrAHkAIABSAGUAZwB1AGwAYQByACAAMQAuADAAQgBMAEIAIABQAGkAeABlAGwAIAA3ACAAQwBoAHUAbgBrAHkAIABSAGUAZwB1AGwAYQByAFYAZQByAHMAaQBvAG4AIAAxAC4AMABCAEwAQgBQAGkAeABlAGwANwBDAGgAdQBuAGsAeQAtAFIAZQBnAHUAbABhAHIAVABoAGkAcwAgAEYAbwBuAHQAIABTAG8AZgB0AHcAYQByAGUAIABpAHMAIABsAGkAYwBlAG4AcwBlAGQAIAB1AG4AZABlAHIAIAB0AGgAZQAgAFMASQBMACAATwBwAGUAbgAgAEYAbwBuAHQAIABMAGkAYwBlAG4AcwBlACwAIABWAGUAcgBzAGkAbwBuACAAMQAuADEALgAgAGgAdAB0AHAAcwA6AC8ALwBvAHAAZQBuAGYAbwBuAHQAbABpAGMAZQBuAHMAZQAuAG8AcgBnAGgAdAB0AHAAcwA6AC8ALwBvAHAAZQBuAGYAbwBuAHQAbABpAGMAZQBuAHMAZQAuAG8AcgBnAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAMBAgEDAQQBBQEGAQcBCAEJAQoBCwEMAQ0BDgEPARABEQESARMBFAEVARYBFwEYARkBGgEbARwBHQEeAR8BIAEhASIBIwEkASUBJgEnASgBKQEqASsBLAEtAS4BLwEwATEBMgEzATQBNQE2ATcBOAE5AToBOwE8AT0BPgE/AUABQQFCAUMBRAFFAUYBRwFIAUkBSgFLAUwBTQFOAU8BUAFRAVIBUwFUAVUBVgFXAVgBWQFaAVsBXAFdAV4BXwd1bmkwMDIxB3VuaTAwMjIHdW5pMDAyMwd1bmkwMDI0B3VuaTAwMjUHdW5pMDAyNgd1bmkwMDI3B3VuaTAwMjgHdW5pMDAyOQd1bmkwMDJBB3VuaTAwMkIHdW5pMDAyQwd1bmkwMDJEB3VuaTAwMkUHdW5pMDAyRgd1bmkwMDMwB3VuaTAwMzEHdW5pMDAzMgd1bmkwMDMzB3VuaTAwMzQHdW5pMDAzNQd1bmkwMDM2B3VuaTAwMzcHdW5pMDAzOAd1bmkwMDM5B3VuaTAwM0EHdW5pMDAzQgd1bmkwMDNDB3VuaTAwM0QHdW5pMDAzRQd1bmkwMDNGB3VuaTAwNDAHdW5pMDA0MQd1bmkwMDQyB3VuaTAwNDMHdW5pMDA0NAd1bmkwMDQ1B3VuaTAwNDYHdW5pMDA0Nwd1bmkwMDQ4B3VuaTAwNDkHdW5pMDA0QQd1bmkwMDRCB3VuaTAwNEMHdW5pMDA0RAd1bmkwMDRFB3VuaTAwNEYHdW5pMDA1MAd1bmkwMDUxB3VuaTAwNTIHdW5pMDA1Mwd1bmkwMDU0B3VuaTAwNTUHdW5pMDA1Ngd1bmkwMDU3B3VuaTAwNTgHdW5pMDA1OQd1bmkwMDVBB3VuaTAwNUIHdW5pMDA1Qwd1bmkwMDVEB3VuaTAwNUUHdW5pMDA1Rgd1bmkwMDYwB3VuaTAwNjEHdW5pMDA2Mgd1bmkwMDYzB3VuaTAwNjQHdW5pMDA2NQd1bmkwMDY2B3VuaTAwNjcHdW5pMDA2OAd1bmkwMDY5B3VuaTAwNkEHdW5pMDA2Qgd1bmkwMDZDB3VuaTAwNkQHdW5pMDA2RQd1bmkwMDZGB3VuaTAwNzAHdW5pMDA3MQd1bmkwMDcyB3VuaTAwNzMHdW5pMDA3NAd1bmkwMDc1B3VuaTAwNzYHdW5pMDA3Nwd1bmkwMDc4B3VuaTAwNzkHdW5pMDA3QQd1bmkwMDdCB3VuaTAwN0MHdW5pMDA3RAd1bmkwMDdFAAA=") format("truetype"); font-display: swap; }
 :root { color-scheme: light; --bg: #DDD8CB; --label: #EBE7DF; --ink: #121210; --red: #8E1C18; --deep: #262B2B;
         --dim: #4E4B44; --line: #B9B3A4; --ok: #2E6B3A; }
@@ -43,7 +42,7 @@ button.go { background: var(--red); border-color: var(--red); color: #fff; }
 button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 label { display: inline-flex; align-items: center; gap: 6px; }
 input[type=checkbox] { width: 18px; height: 18px; margin: 0; accent-color: var(--red); }
-/* the waveform: the cassette's dark window */
+
 canvas { display: block; width: 100%; height: 120px; background: #000; border-radius: 8px; margin: 10px 0; box-shadow: 0 0 0 3px var(--deep); }
 input[type=range] { flex: 1; min-width: 120px; accent-color: var(--red); }
 .slide { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 10px; }
@@ -111,17 +110,13 @@ footer nav a { margin: 0 8px; color: var(--ink); }
 <script type="module">
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 Blair (blairysbeatlab), BBL JAM BOX
-// The sample memory image: what the sample uploader writes to the FM-1 (firmware/src/eng_sampler.c has the layout).
-// Flash 0xA0000..0xD9FFF: a 4 KiB table, then the chunks' data as 8-bit mu-law (G.711), one byte a sample.
-// Shared by the emulator page (web/emu/index.html) and the uploader. No DOM here.
 
-const SMP_BASE = 0xA0000, SMP_REGION = 0x3A000, SMP_TABLE = 0x1000;   // (to 0xDA000: the FM-1's last jam above)
-const SMP_CAP = SMP_REGION - SMP_TABLE;          // 233472 bytes = samples: ~10.6 s at 22 kHz
-const SMP_MAX = 32;                              // chunks S01..S32
+const SMP_BASE = 0xA0000, SMP_REGION = 0x3A000, SMP_TABLE = 0x1000;
+const SMP_CAP = SMP_REGION - SMP_TABLE;
+const SMP_MAX = 32;
 const SMP_RATES = [11025, 22050, 32000];
 const MAGIC = 0x324D5346, NAME = 12, ENTRY = 24;
 
-// 16-bit sample -> mu-law byte, and back (the firmware's SMP_ULAW)
 function ulawEnc(s) {
   let sign = 0;
   if (s < 0) { sign = 0x80; s = -s; }
@@ -140,8 +135,6 @@ const CRC = new Uint32Array(256).map((_, n) => { let c = n; for (let k = 0; k < 
 function crcAdd(c, b, a = 0, e = b.length) { for (let i = a; i < e; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return c >>> 0; }
 const crc32 = (b) => (~crcAdd(0xFFFFFFFF, b)) >>> 0;
 
-// A chunk from a decoded sound: mono samples (-1..1) at srcRate, seconds a..b, stored at rate (box filter, as the
-// prototype), normalised to 0.97 peak if asked. -> {name, rate, data: Uint8Array of mu-law} or null (under 64 samples)
 function makeChunk(mono, srcRate, a, b, rate, normalise, name) {
   const s0 = Math.floor(a * srcRate), s1 = Math.floor(b * srcRate), ratio = srcRate / rate;
   const n = Math.floor((s1 - s0) / ratio);
@@ -160,11 +153,9 @@ function makeChunk(mono, srcRate, a, b, rate, normalise, name) {
   return { name: name.slice(0, NAME), rate, data };
 }
 
-// a chunk's samples as -1..1 (to play it back)
 function chunkFloat(c) { const o = new Float32Array(c.data.length); for (let i = 0; i < o.length; i++) o[i] = ULAW_DEC[c.data[i]] / 32768; return o; }
 const usedBytes = (chunks) => chunks.reduce((a, c) => a + c.data.length, 0);
 
-// the whole region (SMP_REGION bytes, from flash SMP_BASE): the table, then the data; the rest erased (0xFF)
 function buildImage(chunks) {
   if (chunks.length > SMP_MAX || usedBytes(chunks) > SMP_CAP) throw new Error("too much for the sample memory");
   const img = new Uint8Array(SMP_REGION).fill(0xFF), v = new DataView(img.buffer);
@@ -189,7 +180,6 @@ function buildImage(chunks) {
   return img;
 }
 
-// the chunks in a region image (as the device checks it: a bad table or data = none)
 function parseImage(img) {
   if (!img || img.length < SMP_REGION) return [];
   const v = new DataView(img.buffer, img.byteOffset, img.byteLength), n = v.getUint16(6, true), dlen = v.getUint32(8, true);
@@ -208,12 +198,6 @@ function parseImage(img) {
 
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
-//
-// The FM-1 USB-MIDI update protocol over WebMIDI (after tools/fm1_install.py).
-// Step 1: the running firmware (official
-// or Felucca) reads parts of the package and stages the update loader. Step 2:
-// the loader reads the whole image and writes it. Both steps are "the device
-// asks, we answer": cmd 0x30 read requests on the logical image.
 
 const HS_QUERY = [0xF0, 0x00, 0x32, 0x45, 0x00, 0x00, 0x00, 0x40, 0x7F, 0xF7];
 const UPGRADE = [0xF0, 0x22, 0x24, 0x35, 0x7F, 0xF7];
@@ -221,8 +205,6 @@ const MAXDATA = 512;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const IS_OTA = (id) => /^ota-/i.test(id.model);
 
-// errors carry a code the pages translate: notfound, model, stopped, noloader, lost, noreturn,
-// mismatch (detail: the identity the device reports), badreq
 function fail(code, msg, detail = "") { const e = new Error(msg); e.code = code; e.detail = detail; return e; }
 
 function pack7(data) {
@@ -273,7 +255,6 @@ function parseIdentity(pkt) {
   return m ? { text: txt, model: m[1], version: parseInt(m[2], 10) } : null;
 }
 
-// one MIDI in/out pair with a SysEx queue
 class Link {
   constructor(input, output) {
     this.input = input; this.output = output; this.q = []; this.waiter = null;
@@ -284,7 +265,7 @@ class Link {
     };
   }
   get lost() { return this.input.state === "disconnected" || this.output.state === "disconnected"; }
-  // false when the port is gone (unplugged): WebMIDI throws on a disconnected output
+
   send(bytes) {
     try { this.output.send(bytes); return true; } catch (_) { return false; }
   }
@@ -322,12 +303,11 @@ class Updater {
     this.log = log || (() => {});
   }
 
-  // every in/out pair with the same port name that answers the handshake
   async find(filter) {
     const outs = [...this.access.outputs.values()];
     for (const input of this.access.inputs.values()) {
       if (input.state === "disconnected") continue;
-      if (!/fm-1|trapstation|felucca|ota|composite|sinco|usb-midi/i.test(input.name || "")) continue;   // never probe other gear
+      if (!/fm-1|trapstation|felucca|ota|composite|sinco|usb-midi/i.test(input.name || "")) continue;
       const output = outs.find((o) => o.name === input.name && o.state !== "disconnected");
       if (!output) continue;
       try { await input.open(); await output.open(); } catch (_) { continue; }
@@ -349,8 +329,6 @@ class Updater {
     return null;
   }
 
-  // serve read requests until the device asks for one of the finish addresses; stops early
-  // when the port disappears (lost: true) instead of waiting out idleMs
   async serve(link, image, finishAddr, idleMs, onProgress) {
     let served = 0, last = Date.now();
     for (;;) {
@@ -378,7 +356,6 @@ class Updater {
     }
   }
 
-  // full install: running firmware -> loader -> new firmware
   async install(image, product, onStep) {
     const step = onStep || (() => {});
     const dev = await this.find((id) => !IS_OTA(id));
@@ -407,7 +384,6 @@ class Updater {
     return back.id.text;
   }
 
-  // step 2 with the loader found by find()/waitFor()
   async write(ota, image, step) {
     ota.link.send(UPGRADE);
     await sleep(2000);
@@ -416,7 +392,6 @@ class Updater {
     return s2;
   }
 
-  // resume: the device is already in update mode (loader) -> true when the write finished
   async resume(image, onStep, product = null) {
     const model = product && product.split("_")[0];
     const ota = await this.find((id) => model ? id.model === "ota-" + model : IS_OTA(id));
@@ -439,10 +414,7 @@ class Updater {
 
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 Blair (blairysbeatlab), BBL JAM BOX
-// The sample uploader's transfer to the FM-1 over WebMIDI SysEx (firmware/src/smp_usb.c has the protocol): BEGIN, then
-// each 4 KiB sector of the region image whose CRC on the device differs: WRITE in 512-byte blocks (data first, the
-// table sector last), then END. A sector that fails is sent again from its start (3 tries). Unchanged sectors are
-// skipped, so adding one sample to a full list is quick.
+
 
 const BEGIN = 0x60, SUM = 0x61, WRITE = 0x62, END = 0x63, SECTOR = 4096, BLOCK = 512;
 
@@ -456,7 +428,6 @@ function frame(cmd, body) {
 const u32 = (v) => [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255];
 const rd32 = (d, i) => (d[i] | d[i + 1] << 8 | d[i + 2] << 16 | d[i + 3] << 24) >>> 0;
 
-// one request, its reply's body (null: no reply in ms, tries times)
 async function ask(link, cmd, body, ms = 3000, tries = 3) {
   for (let t = 0; t < tries; t++) {
     link.drain();
@@ -472,7 +443,6 @@ async function ask(link, cmd, body, ms = 3000, tries = 3) {
   return null;
 }
 
-// img: the whole region (smpimg.js buildImage); say(text): progress. -> a message for the page
 async function uploadSamples(img, say) {
   if (!navigator.requestMIDIAccess) throw new Error("This browser has no Web MIDI: use Chrome or Edge.");
   let access;
@@ -486,12 +456,12 @@ async function uploadSamples(img, say) {
     const b = await ask(link, BEGIN, []);
     if (!b) throw new Error("The FM-1 did not answer. Install the groovebox firmware first (the Install page), then try again.");
     if (b[0]) throw new Error("The FM-1 refused the upload (" + b[0] + ").");
-    // what this firmware holds (BEGIN's cap): a page newer or older than it must not ask past its end
+
     const cap = rd32(b, 1), used = new DataView(img.buffer, img.byteOffset).getUint32(8, true);
     if (used > cap) throw new Error("Those samples don't fit this firmware's memory (" + cap + " bytes). Remove some, or update the FM-1 first.");
     const n = Math.min(Math.ceil(img.length / SECTOR), Math.floor((SMP_TABLE + cap) / SECTOR)), order = [];
     for (let s = SMP_TABLE / SECTOR; s < n; s++) order.push(s);
-    order.push(0);                                    // the table last
+    order.push(0);
     let done = 0, sent = 0;
     for (const s of order) {
       const off = s * SECTOR, sec = img.subarray(off, off + SECTOR);
@@ -524,22 +494,14 @@ async function uploadSamples(img, say) {
 
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 Blair (blairysbeatlab), BBL JAM BOX
-// The sample uploader's panel (the emulator page and the FM-1 samples page share it): pick a sound file, choose a
-// part (Play shows a playhead; Loop plays the part round and round, and Start / End move it live, to find a loop), Write
-// it to the list, Upload the list. The page has the markup (ids sfile sfinfo swave sA sB spv sloop srate snorm
-// swr swmsg smbar smtxt slist sup sclr sumsg). opts:
-//   initial         the chunks to start with (smpimg.js parseImage)
-//   upload(img, say) -> Promise of a message: sends the region image (smpimg.js buildImage); say(text) for progress
-//   changed(list)   the list changed (to keep it)
-//   tr(text)        the page's language: an English text -> the shown one (TRAPSTATION: German; default as is)
-// -> { refresh() }: draw the texts again (after a language change)
 
-const POS = 100000;                                     // the Start / End sliders' steps (the arrow keys: one at a time)
+
+const POS = 100000;
 function mountUploader(opts) {
   const $ = (id) => document.getElementById(id);
   const tr = opts.tr || ((s) => s);
   let src = null, list = (opts.initial || []).slice(), pac = null, pnode = null, busy = false;
-  let head = -1, headT = 0, raf = 0, shown = null;      // the part's playhead: where (s), when last moved; the list row playing
+  let head = -1, headT = 0, raf = 0, shown = null;
   $("sA").max = $("sB").max = POS;
   const msg = (id, t, cls) => { const e = $(id); e.textContent = tr(t); e.className = "msg" + (cls ? " " + cls : ""); };
   const kb = (b) => (b / 1024).toFixed(b < 10240 ? 1 : 0) + " KB";
@@ -564,8 +526,7 @@ function mountUploader(opts) {
     pnode.onended = stopPlay;
     return pnode;
   }
-  // the part playing: the whole file in one buffer, so its loop points can move as it plays. The head follows the clock
-  // the way the browser's loop does (past the end: back by the loop's length)
+
   function tick() {
     if (!pnode || head < 0) return;
     const [a, b] = secs(), now = pac.currentTime, loop = $("sloop").checked;
@@ -595,7 +556,7 @@ function mountUploader(opts) {
     g.fillStyle = "#000"; g.fillRect(0, 0, W, H);
     if (!src) return;
     const [a, b] = secs(), xa = a / src.dur * W, xb = b / src.dur * W, n = src.mono.length;
-    if (!src.peaks) {                                   // (once a file: this draws every frame while it plays)
+    if (!src.peaks) {
       src.peaks = new Float32Array(W);
       for (let x = 0; x < W; x++) {
         let m = 0;
@@ -608,7 +569,7 @@ function mountUploader(opts) {
       g.fillStyle = x >= xa && x <= xb ? "#2ec4ff" : "#444";
       g.fillRect(x, H / 2 - m * H / 2, 1, Math.max(1, m * H));
     }
-    const px = Math.max(3, Math.round(2 * W / (c.clientWidth || W)));   // (2 px wide on screen, a phone too)
+    const px = Math.max(3, Math.round(2 * W / (c.clientWidth || W)));
     g.fillStyle = "#ffd60a"; g.fillRect(xa, 0, px, H); g.fillRect(xb - px, 0, px, H);
     if (head >= 0) { g.fillStyle = "#ff5a36"; g.fillRect(head / src.dur * W - px / 2, 0, px, H); }
   }
@@ -626,7 +587,7 @@ function mountUploader(opts) {
       li.children[0].textContent = "S" + String(i + 1).padStart(2, "0");
       li.children[1].textContent = c.name;
       li.children[2].textContent = (c.data.length / c.rate).toFixed(2) + " s · " + Math.round(c.rate / 1000) + " kHz · " + kb(c.data.length);
-      li.children[3].addEventListener("click", (e) => {     // (Loop on: round and round, so it has a Stop)
+      li.children[3].addEventListener("click", (e) => {
         const was = shown === e.target;
         stopPlay();
         if (was) return;
@@ -722,7 +683,7 @@ const TEXT = {
     navInstall: "INSTALL",
   },
 };
-// the uploader's own messages (smpui.js, fm1smp.js) are English: German by pattern
+
 const DE = [
   [/^Play$/, "Abspielen"], [/^Stop$/, "Stopp"], [/^Remove$/, "Entfernen"],
   [/^WAV, MP3, OGG or FLAC\.$/, "WAV, MP3, OGG oder FLAC."],
@@ -767,7 +728,7 @@ let ui = null;
 function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-t]").forEach((e) => { e.textContent = TEXT[lang][e.dataset.t]; });
-  document.querySelectorAll("[data-h]").forEach((e) => { e.innerHTML = TEXT[lang][e.dataset.h]; });   // (our own texts: <b> only)
+  document.querySelectorAll("[data-h]").forEach((e) => { e.innerHTML = TEXT[lang][e.dataset.h]; });
   document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
   if (ui) ui.refresh();
 }
@@ -777,7 +738,7 @@ document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("clic
   applyLang();
 }));
 applyLang();
-const KEEP = "felucca-samples";                       // the list, as its region image (base64)
+const KEEP = "felucca-samples";
 function loadList() {
   try {
     const b64 = localStorage.getItem(KEEP);

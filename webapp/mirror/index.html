@@ -62,8 +62,6 @@ function frame(cmd, body) {
   return [0xF0, ...pack7(m), 0xF7];
 }
 
-// the picture: 240 x 240, RGB 3-3-2 -> RGBA
-// the pictures arrive in src; the screen (ctx) fades to it over a few refreshes (Smooth: 0 = at once)
 const ctx = $("scr").getContext("2d"), srcC = document.createElement("canvas");
 srcC.width = srcC.height = 240;
 const sctx = srcC.getContext("2d"), img = sctx.createImageData(240, 240), px = new Uint32Array(img.data.buffer);
@@ -72,22 +70,22 @@ for (let c = 0; c < 256; c++) {
   const r = Math.round((c >> 5) * 255 / 7), g = Math.round(((c >> 2) & 7) * 255 / 7), b = Math.round((c & 3) * 255 / 3);
   PAL[c] = 0xFF000000 | b << 16 | g << 8 | r;
 }
-let dirty = false, pend = false, pendT = 0;     // dirty: show now; pend: drawn into, waiting for its 04
-// the stream's decoder: records may span frames (mirror.c)
+let dirty = false, pend = false, pendT = 0;
+
 const st = { t: 0, h: [], x: 0, y: 0, w: 0, hh: 0, pos: 0, n: -1 };
 function feed(b) {
   if (!st.t) {
     if (b === 3) { px.fill(PAL[0]); dirty = true; return; }
-    if (b === 4) { dirty = true; pend = false; return; }   // a whole picture: show it
+    if (b === 4) { dirty = true; pend = false; return; }
     if (b === 1 || b === 2) { st.t = b; st.h = []; st.n = -1; st.pos = 0; return; }
-    lost++; return;                                    // (out of step: wait for the next start)
+    lost++; return;
   }
   if (st.h.length < 4) {
     st.h.push(b);
     if (st.h.length === 4) { st.x = st.h[0]; st.y = st.h[1]; st.w = st.h[2] || 240; st.hh = st.h[3] || 240; }
     return;
   }
-  if (st.t === 1) {                                    // a rectangle of one colour
+  if (st.t === 1) {
     const c = PAL[b];
     for (let j = 0; j < st.hh && st.y + j < 240; j++) {
       const o = (st.y + j) * 240 + st.x;
@@ -95,7 +93,7 @@ function feed(b) {
     }
     st.t = 0; if (!pend) pendT = performance.now(); pend = true; return;
   }
-  if (st.n < 0) { st.n = b; return; }                  // a run: its length, then its colour
+  if (st.n < 0) { st.n = b; return; }
   const c = PAL[b], end = st.w * st.hh;
   for (let k = 0; k < st.n && st.pos < end; k++, st.pos++) {
     const x = st.x + st.pos % st.w, y = st.y + (st.pos / st.w | 0);
@@ -132,13 +130,12 @@ async function connect() {
   seq = -1; st.t = 0;
   send(frame(CMD, [1]));
   clearInterval(alive);
-  alive = setInterval(() => send(frame(CMD, [1])), 1000);   // (the FM-1 stops 3 s after the last)
+  alive = setInterval(() => send(frame(CMD, [1])), 1000);
   say("Connected to " + outs.map((o) => o.name).join(", ") + ". Turn a knob if the screen stays black.");
   $("go").textContent = "Reconnect";
 }
 $("go").onclick = connect;
 
-// the serial port (mirror.c: S start, M keep alive; raw records after 03 'B' 'J' 'B')
 let port = null, sync = 0, serAlive = null;
 const SYNC = [3, 0x42, 0x4A, 0x42];
 async function serial() {
@@ -163,7 +160,7 @@ async function serial() {
       if (done) break;
       bytes += value.length; msgs++;
       for (const b of value) {
-        if (sync < 4) {                                 // (an old stream's bytes until the start)
+        if (sync < 4) {
           sync = b === SYNC[sync] ? sync + 1 : b === SYNC[0] ? 1 : 0;
           if (sync === 4) { px.fill(PAL[0]); dirty = true; }
           continue;
@@ -177,11 +174,10 @@ async function serial() {
 $("ser").onclick = serial;
 addEventListener("beforeunload", () => send(frame(CMD, [0])));
 
-// audio: the FM-1's USB audio as an input, played here (for OBS, adding the FM-1 as an audio input is better)
 let actx = null;
 $("listen").onclick = async () => {
   try {
-    await navigator.mediaDevices.getUserMedia({ audio: true });   // (device names only after a permission)
+    await navigator.mediaDevices.getUserMedia({ audio: true });
     const devs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "audioinput");
     const fm = devs.find((d) => /fm-?1|trapstation|felucca|bbl/i.test(d.label)) || devs[0];
     const s = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: fm ? { exact: fm.deviceId } : undefined,
@@ -208,9 +204,9 @@ addEventListener("keydown", (e) => { if (e.target.tagName !== "INPUT" && (e.key 
 
 let t0 = performance.now(), draws = 0, fadeN = -1;
 (function loop(t) {
-  if (pend && t - pendT > 300) { dirty = true; pend = false; }   // (no 04 coming: a screen outside the UI's)
+  if (pend && t - pendT > 300) { dirty = true; pend = false; }
   if (dirty) { sctx.putImageData(img, 0, 0); dirty = false; draws++; fadeN = 0; }
-  if (fadeN >= 0) {                                     // (a blend each refresh, then exact)
+  if (fadeN >= 0) {
     const k = +$("fade").value, steps = k * 3;
     fadeN++;
     ctx.globalAlpha = !k || fadeN >= steps ? 1 : 1 - Math.pow(0.5, 6 / steps);
