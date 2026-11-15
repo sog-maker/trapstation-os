@@ -1,0 +1,88 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only
+     The site's front page (web/make_site.py copies it to index.html): the beta warning and the tools.
+     TRAPSTATION (phase 9a): the cassette look (KASSETTE HELL), German and English. -->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRAPSTATION</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%23262B2B%22/%3E%3Crect x=%222%22 y=%226%22 width=%2212%22 height=%224%22 fill=%22%238E1C18%22/%3E%3C/svg%3E">
+<style>
+  :root { color-scheme: light; --bg: #DDD8CB; --label: #EBE7DF; --ink: #121210; --red: #8E1C18; --deep: #262B2B;
+          --dim: #4E4B44; --line: #B9B3A4; }
+  html, body { background: var(--bg); }
+  body { margin: 0; color: var(--ink); font: 16px/1.6 ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace; }
+  main { max-width: 560px; margin: 0 auto; padding: 40px 16px; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: .06em; margin: 0; }
+  .band { height: 10px; margin: 10px 0 20px; border-radius: 2px; background: linear-gradient(var(--red) 0 70%, transparent 70% 80%, var(--deep) 80%); }
+  p { margin: 0 0 16px; }
+  .warn { border: 2px solid var(--red); background: var(--label); color: var(--red); padding: 12px 16px; margin: 24px 0; border-radius: 10px; }
+  .warn b { display: block; font-size: 18px; }
+  .tip { border-left: 8px solid var(--red); background: var(--label); padding: 12px 16px; margin: 0 0 24px; border-radius: 10px; }
+  .tip b { display: block; font-size: 18px; color: var(--red); }
+  a.big { display: block; background: var(--deep); color: var(--label); text-decoration: none; padding: 14px 20px;
+          margin: 0 0 12px; font-weight: 700; border-radius: 10px; border-left: 8px solid var(--red); }
+  a.big span { display: block; font-weight: 400; font-size: 14px; opacity: .85; }
+  a.big:focus-visible, button:focus-visible, .small a:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+  .langs { display: flex; gap: 4px; }
+  .langs button { font: inherit; font-size: 14px; background: transparent; color: var(--ink); border: 2px solid var(--line);
+                  border-radius: 8px; padding: 2px 8px; cursor: pointer; }
+  .langs button[aria-pressed=true] { background: var(--deep); color: var(--label); border-color: var(--deep); }
+  .small { color: var(--dim); font-size: 13px; }
+  .small a { color: inherit; }
+  [lang=de] .en, [lang=en] .de { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><h1>TRAPSTATION</h1>
+    <div class="langs" role="group" aria-label="Sprache / Language"><button type="button" data-lang="de">DE</button><button type="button" data-lang="en">EN</button></div></div>
+  <div class="band"></div>
+  <p class="de">Eine freie Beta-Firmware, die das M-VAVE FM-1 in eine 6-Spur-Trap-Groovebox verwandelt: FM-Drums und Synth, 808-Drums, Sampler, Trap-Generatoren, Tape und Vinyl.</p>
+  <p class="en">A free beta firmware that turns the M-VAVE FM-1 into a 6-track trap groovebox: FM drums and synth, 808 drums, a sampler, trap generators, tape and vinyl.</p>
+  <div class="warn de"><b>BETA: Installation auf eigenes Risiko</b>
+    Das ist Test-Firmware und kann Fehler haben. Vorher die offizielle FM-1-V15-Firmware bei M-VAVE herunterladen,
+    damit du zurückwechseln kannst.</div>
+  <div class="warn en"><b>BETA: flash at your own risk</b>
+    This is test firmware. It may have bugs. Before you start, download the official FM-1 V15 firmware from M-VAVE
+    so you can go back to it.</div>
+  <div class="tip de"><b>Für den besten Klang: zweiten Kern einschalten</b>
+    Nach der Installation auf der Seite CLOCK den 4. Regler (CPU) nach rechts drehen und das FM-1 aus- und einschalten.
+    Die Anzeige heißt dann „2CPU“: weniger Last, ein vollerer Sound. Die Einstellung bleibt gespeichert.</div>
+  <div class="tip en"><b>For the best sound: switch on the second core</b>
+    After installing, turn the 4th knob (CPU) on the CLOCK page to the right and switch the FM-1 off and on.
+    It then shows “2CPU”: less load, a fuller sound. The setting is kept.</div>
+  <a class="big de" href="webapp/installer/">1. Firmware installieren · sichern<span>FM-1 per USB anschließen, in Chrome oder Edge öffnen. Hier auch: Sichern &amp; Wiederherstellen</span></a>
+  <a class="big en" href="webapp/installer/">1. Install the firmware · back up<span>Connect the FM-1 by USB, open in Chrome or Edge. Also here: backup &amp; restore</span></a>
+  <a class="big de" href="webapp/samples/">2. Samples laden<span>Eigene Sounds aufs FM-1 bringen (nach der Installation)</span></a>
+  <a class="big en" href="webapp/samples/">2. Load samples<span>Put your own sounds on the FM-1 (after installing)</span></a>
+  <p class="small de">Du brauchst einen Computer mit Chrome oder Edge. Vorher andere Musikprogramme schließen, die das FM-1 nutzen.
+    Neu dabei? Zuerst die <a href="FLASHING_GUIDE.txt">Schritt-für-Schritt-Anleitung</a> lesen (englisch): sie erklärt auch den Weg zurück zur offiziellen Firmware.</p>
+  <p class="small en">You need a computer with Chrome or Edge. Close any other music apps that use the FM-1 first.
+    New to this? Read the <a href="FLASHING_GUIDE.txt">step-by-step guide</a> first: it explains how to go back to the official firmware.</p>
+  <p class="small">TRAPSTATION: a modified version of BBL JAM BOX by Blair (blairysbeatlab), based on Felucca by Leo Kuroshita
+    (@kurogedelic), Hügelton Instruments. Not made or supported by M-VAVE. M-VAVE and FM-1 are trademarks of their respective owners.<br>
+    Free software (GPL-3.0): <a href="https://github.com/sog-maker/trapstation-os">source code</a> ·
+    <a href="firmware/LICENSING.md">licences</a></p>
+</main>
+<script>
+(() => {
+  let lang;
+  try { lang = localStorage.getItem("trapstation-lang"); } catch {}
+  if (lang !== "de" && lang !== "en") lang = (navigator.language || "de").toLowerCase().startsWith("de") ? "de" : "en";
+  const apply = () => {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  };
+  document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => {
+    lang = b.dataset.lang;
+    try { localStorage.setItem("trapstation-lang", lang); } catch {}
+    apply();
+  }));
+  apply();
+})();
+</script>
+</body>
+</html>
