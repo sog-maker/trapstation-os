@@ -1,0 +1,130 @@
+/* SPDX-License-Identifier: GPL-3.0-only
+ * Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments */
+
+#pragma once
+#include <stdint.h>
+#define FM1_IRQ_TARGET 1
+
+#define FM1_VEC ((volatile uint32_t *)0x01C7FE00u)
+#define FM1_ICFG(n) (*(volatile uint32_t *)(0x1EEF100u + 4u * ((n) >> 3)))
+#define FM1_IPND(i) (*(volatile uint32_t *)(0x1EEF180u + 4u * (i)))
+#define FM1_ILAT_SET (*(volatile uint32_t *)0x1EEF1A0u)
+#define FM1_ILAT_CLR (*(volatile uint32_t *)0x1EEF1A4u)
+#define FM1_EMU_CON (*(volatile uint32_t *)0x1EEF0D0u)
+#define FM1_EMU_MSG (*(volatile uint32_t *)0x1EEF0D4u)
+#define FM1_ETM_CON (*(volatile uint32_t *)0x1EEF1C0u)
+#define FM1_ETM_PC(i) (*(volatile uint32_t *)(0x1EEF1C4u + 4u * (i)))
+#define FM1_DBG_WR_EN (*(volatile uint32_t *)0x1EEE240u)
+#define FM1_DBG_MSG (*(volatile uint32_t *)0x1EEE244u)
+#define FM1_DBG_MSG_CLR (*(volatile uint32_t *)0x1EEE248u)
+#define FM1_DBG_EN (*(volatile uint32_t *)0x1EEE340u)
+
+enum { FM1_IRQ_EXCEPTION = 1, FM1_IRQ_ALNK0 = 11, FM1_IRQ_SPI1 = 16, FM1_IRQ_UART1 = 20,
+       FM1_IRQ_SARADC = 24, FM1_IRQ_SPI2 = 37, FM1_IRQ_TIMER5 = 63, FM1_IRQ_SOFT0 = 120 };
+
+static inline uint32_t fm1_icfg(void) { uint32_t v; __asm__ volatile("%0 = icfg" : "=r"(v)); return v; }
+static inline void fm1_icfg_set(uint32_t v) { __asm__ volatile("icfg = %0" ::"r"(v) : "memory"); }
+static inline void fm1_irq_off(void) { __asm__ volatile("cli" ::: "memory"); }
+static inline void fm1_irq_on(void) { __asm__ volatile("csync\n\tsti" ::: "memory"); }
+
+#define FM1_CRASH_MAGIC 0x43525348u
+typedef struct {
+    uint32_t magic, count, vec, pc, rets, emu, dbg, sp, psr, icfg, uptime_ms;
+    uint32_t etm[4];
+    uint32_t early;
+#if FM1_CPU1_USED
+    uint32_t core;
+#endif
+} fm1_crash_t;
+
+fm1_crash_t fm1_crash __attribute__((section(".noinit")));
+
+extern const char fm1_fatal_stubs[];
+static void fm1_fault(const fm1_crash_t *c);
+
+static void fm1_irq_init(void)
+{
+    uint32_t i;
+    for (i = 0; i < 32u; i++)
+        *(volatile uint32_t *)(0x1EEF100u + 4u * i) = 0;
+    FM1_ILAT_CLR = 0xFFu;
+    FM1_EMU_MSG = 0xFFFFFFFFu;
+    if (!(FM1_DBG_WR_EN & 1u))
+        FM1_DBG_WR_EN = 0xE7u;
+    FM1_DBG_MSG_CLR = 0xFFFFFFFFu;
+    for (i = 0; i < 128u; i++)
+        FM1_VEC[i] = (uint32_t)(uintptr_t)(fm1_fatal_stubs + 6u * i);
+    FM1_ICFG(1) = (FM1_ICFG(1) & ~0xF0u) | 0xF0u;
+
+    FM1_EMU_CON &= ~(1u << 2);
+    FM1_ETM_CON |= 1u;
+}
+
+static void fm1_irq_attach(uint32_t n, void (*h)(void), uint32_t prio)
+{
+    uint32_t sh = (n & 7u) * 4u;
+    FM1_VEC[n] = (uint32_t)(uintptr_t)h;
+    FM1_ICFG(n) = (FM1_ICFG(n) & ~(0xFu << sh)) | ((((prio & 7u) << 1) | 1u) << sh);
+}
+static void fm1_irq_mask(uint32_t n) { FM1_ICFG(n) &= ~(1u << ((n & 7u) * 4u)); }
+
+static void fm1_irq_enable_all(void)
+{
+    fm1_icfg_set(fm1_icfg() | 0x100u);
+    fm1_irq_on();
+}
+
+#if FM1_CPU1_USED
+extern uint32_t _c1_ustack[], _c1_sstack_top[];
+#endif
+void fm1_fault_c(uint32_t *f)
+{
+    static volatile uint32_t in_fault;
+    uint32_t i, count = fm1_crash.magic == FM1_CRASH_MAGIC ? fm1_crash.count : 0;
+    uint32_t early = fm1_crash.magic == FM1_CRASH_MAGIC ? fm1_crash.early : 0;
+#if FM1_CPU1_USED
+    if (f[24] >= (uint32_t)(uintptr_t)_c1_ustack && f[24] <= (uint32_t)(uintptr_t)_c1_sstack_top) {
+        /* the second core faulted (after Jangada): this runs on it. Its record only, no screen and no reset from
+         * here (a reset from core 1 would hold core 1 first, itself: a frozen FM-1). It stops; core 0's next wait
+         * times out (fm1_cpu1_wait), holds it, and the FM-1 goes on with one core */
+        fm1_crash.magic = FM1_CRASH_MAGIC;
+        fm1_crash.count = count + 1u;
+        fm1_crash.core = 1;
+        fm1_crash.vec = (f[19] - (uint32_t)(uintptr_t)fm1_fatal_stubs) / 6u - 1u;
+        fm1_crash.pc = f[16];
+        fm1_crash.rets = f[25];
+        fm1_crash.sp = f[24];
+        fm1_crash.psr = f[20];
+        fm1_crash.icfg = f[21];
+        fm1_crash.uptime_ms = *(volatile uint32_t *)0x10804u / 24000u;
+        __asm__ volatile("csync" ::: "memory");
+        for (;;)
+            ;
+    }
+#endif
+    fm1_irq_off();
+    if (in_fault++) {
+        FM1_RESET_PREP();
+        *(volatile uint32_t *)0x10000u |= 1u << 4;
+    }
+    fm1_crash.magic = FM1_CRASH_MAGIC;
+    fm1_crash.count = count + 1u;
+    fm1_crash.vec = (f[19] - (uint32_t)(uintptr_t)fm1_fatal_stubs) / 6u - 1u;
+    fm1_crash.pc = f[16];
+    fm1_crash.rets = f[25];
+    fm1_crash.emu = FM1_EMU_MSG;
+    fm1_crash.dbg = FM1_DBG_MSG;
+    fm1_crash.sp = f[24];
+    fm1_crash.psr = f[20];
+    fm1_crash.icfg = f[21];
+    fm1_crash.uptime_ms = *(volatile uint32_t *)0x10804u / 24000u;
+    for (i = 0; i < 4u; i++)
+        fm1_crash.etm[i] = FM1_ETM_PC(i);
+    fm1_crash.early = fm1_crash.uptime_ms < 3000u ? early + 1u : 0u;
+#if FM1_CPU1_USED
+    fm1_crash.core = 0;
+#endif
+    fm1_fault(&fm1_crash);
+    for (;;)
+        ;
+}

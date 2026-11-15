@@ -1,0 +1,18 @@
+# build output
+build/
+*.bin
+*.fwsc
+*.o
+*.elf
+*.map
+# toolchain and SDK, if kept in the tree
+.jieli/
+fw-AC79_AIoT_SDK/
+# Python
+__pycache__/
+*.pyc
+.venv/
+# system
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,19 @@
+{
+  "name": "TRAPSTATION",
+  "source": "TRAPSTATION colours",
+  "format": "hex = Zielfarbe, rgb565 = Displaywert",
+  "colors": {
+    "bg":       { "hex": "#000000", "rgb565": "0x0000" },
+    "surf":     { "hex": "#16181A", "rgb565": "0x10C3" },
+    "raise":    { "hex": "#2A2E31", "rgb565": "0x2966" },
+    "line":     { "hex": "#4A4F54", "rgb565": "0x4A6A" },
+    "steel":    { "hex": "#8A9096", "rgb565": "0x8C92" },
+    "text":     { "hex": "#E4E6E8", "rgb565": "0xE73D" },
+    "red":      { "hex": "#FF2A2A", "rgb565": "0xF945" },
+    "red_deep": { "hex": "#C40208", "rgb565": "0xC001" },
+    "blue":     { "hex": "#1E9BFF", "rgb565": "0x1CDF" },
+    "green":    { "hex": "#44C893", "rgb565": "0x4652" },
+    "gold":     { "hex": "#FDCF3D", "rgb565": "0xFE67" }
+  },
+  "bbl_palette_slots": { "bg": "bg", "surf": "surf", "text": "text", "theme": "red", "accent": "gold" }
+}

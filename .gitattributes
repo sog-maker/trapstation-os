@@ -1,0 +1,12 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.png binary
+*.jpg binary
+*.wav binary
+*.bin binary
+*.fwsc binary
+*.skill binary
+*.ttf binary
+# BBL stores this one with CRLF in the repo: keep it byte for byte as upstream
+web/fader/START.bat -text

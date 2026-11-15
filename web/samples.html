@@ -1,0 +1,210 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only
+     The sample uploader: sounds into the FM-1's sample memory for the SAMPLE machine (web/make_site.py inlines
+     smpimg.js, fm1ota.js, fm1smp.js and smpui.js at LIB). TRAPSTATION (phase 9a): the cassette look, German. -->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRAPSTATION Samples</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%23262B2B%22/%3E%3Crect x=%222%22 y=%226%22 width=%2212%22 height=%224%22 fill=%22%238E1C18%22/%3E%3C/svg%3E">
+<style>
+
+@font-face { font-family: "BLBPixel"; src: url("/*FONT*/") format("truetype"); font-display: swap; }
+:root { color-scheme: light; --bg: #DDD8CB; --label: #EBE7DF; --ink: #121210; --red: #8E1C18; --deep: #262B2B;
+        --dim: #4E4B44; --line: #B9B3A4; --ok: #2E6B3A; }
+html, body { background: var(--bg); }
+body { margin: 0; color: var(--ink); font: 15px/1.5 "BLBPixel", ui-monospace, monospace; letter-spacing: .03em; }
+main { max-width: 860px; margin: 0 auto; padding: 24px 16px 32px; }
+a { color: inherit; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin: 0 0 14px; }
+.top img { width: 72px; height: 72px; image-rendering: pixelated; border-radius: 12px; flex: none; background: var(--deep);
+           box-shadow: 0 0 0 3px var(--deep); }
+.top div { flex: 1; min-width: 0; }
+.top h1 { margin: 0; font-size: 30px; line-height: 1; font-weight: normal; letter-spacing: .02em; white-space: nowrap; }
+.top .sub { margin: 4px 0 0; color: var(--dim); }
+.band { height: 10px; margin: 0 0 18px; border-radius: 2px; background: linear-gradient(var(--red) 0 70%, transparent 70% 80%, var(--deep) 80%); }
+.langs { flex: none; display: flex; gap: 4px; }
+.langs button { background: transparent; color: var(--ink); border-color: var(--line); padding: 3px 8px; text-transform: none; }
+.langs button[aria-pressed=true] { background: var(--deep); color: var(--label); border-color: var(--deep); }
+.pop { background: var(--label); color: var(--ink); border: 2px solid var(--line); border-radius: 12px; padding: 14px 18px; margin: 18px 0 0; }
+.pop h2 { margin: 0 0 8px; font-size: 24px; line-height: 1.1; font-weight: normal; color: var(--red); }
+.pop p { margin: 0 0 10px; }
+.pop p:last-child { margin-bottom: 0; }
+.pop b { font-weight: normal; color: var(--red); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 10px 0; }
+button, select, input[type=file]::file-selector-button { font: inherit; letter-spacing: inherit; padding: 6px 14px; border-radius: 8px;
+  border: 2px solid var(--deep); background: var(--deep); color: var(--label); cursor: pointer; text-transform: uppercase; }
+input[type=file] { font: inherit; max-width: 100%; }
+input[type=file]::file-selector-button { margin-right: 10px; }
+button:disabled { opacity: .35; cursor: default; }
+button.go { background: var(--red); border-color: var(--red); color: #fff; }
+button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+label { display: inline-flex; align-items: center; gap: 6px; }
+input[type=checkbox] { width: 18px; height: 18px; margin: 0; accent-color: var(--red); }
+
+canvas { display: block; width: 100%; height: 120px; background: #000; border-radius: 8px; margin: 10px 0; box-shadow: 0 0 0 3px var(--deep); }
+input[type=range] { flex: 1; min-width: 120px; accent-color: var(--red); }
+.slide { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 10px; }
+.msg { color: var(--dim); }
+.msg.bad { color: var(--red); }
+.msg.ok { color: var(--ok); }
+.meter { height: 12px; background: var(--bg); border: 2px solid var(--deep); border-radius: 4px; overflow: hidden; flex: 1; min-width: 160px; }
+.meter div { height: 100%; width: 0; background: var(--red); }
+ol { margin: 10px 0; padding: 0; list-style: none; }
+ol:empty { display: none; }
+li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto auto; gap: 10px; align-items: center; padding: 6px 0; border-top: 2px solid var(--line); }
+li .n { color: var(--red); }
+li span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+li .sz { color: var(--dim); font-size: 14px; }
+li button { padding: 2px 10px; }
+.small { font-size: 14px; color: var(--dim); }
+footer { margin: 22px 0 0; color: var(--dim); font-size: 13px; text-align: center; }
+footer nav { font-size: 15px; margin-bottom: 8px; }
+footer nav a { margin: 0 8px; color: var(--ink); }
+@media (max-width: 520px) { .top { flex-wrap: wrap; gap: 12px; } .top h1 { font-size: 26px; } .top img { width: 56px; height: 56px; }
+  li { grid-template-columns: 38px minmax(0, 1fr) auto auto; } li .sz { display: none; } }
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+  <img src="/*LOGO*/" alt="TRAPSTATION Logo" width="72" height="72">
+  <div><h1>TRAPSTATION</h1><p class="sub" data-t="sub"></p></div>
+  <div class="langs" role="group" aria-label="Sprache / Language">
+    <button type="button" data-lang="de">DE</button><button type="button" data-lang="en">EN</button>
+  </div>
+</header>
+<div class="band"></div>
+
+<section class="pop" aria-labelledby="h1">
+  <h2 id="h1" data-t="h1"></h2>
+  <p data-h="p1"></p>
+  <div class="row"><input type="file" id="sfile" accept="audio/*,.wav,.mp3,.ogg,.flac,.aif,.aiff" aria-label="Sound file"> <span class="msg" id="sfinfo" data-t="formats"></span></div>
+  <canvas id="swave" width="1400" height="192" aria-label="Waveform"></canvas>
+  <div class="row"><span class="slide"><label for="sA" data-t="start"></label><input type="range" id="sA" min="0" max="1000" value="0"></span>
+    <span class="slide"><label for="sB" data-t="end"></label><input type="range" id="sB" min="0" max="1000" value="1000"></span></div>
+  <div class="row"><button type="button" id="spv" disabled></button>
+    <label><input type="checkbox" id="sloop"> <span data-t="loop"></span></label>
+    <label><span data-t="rate"></span> <select id="srate"><option value="11025">11 kHz</option><option value="22050" selected>22 kHz</option><option value="32000">32 kHz</option></select></label>
+    <label><input type="checkbox" id="snorm" checked> <span data-t="norm"></span></label>
+    <button type="button" class="go" id="swr" disabled data-t="write"></button> <span class="msg" id="swmsg"></span></div>
+  <p class="small" data-t="loophelp"></p>
+</section>
+
+<section class="pop" aria-labelledby="h2">
+  <h2 id="h2" data-t="h2"></h2>
+  <p data-h="p2"></p>
+  <div class="row"><span data-t="memory"></span><div class="meter"><div id="smbar"></div></div><span class="msg" id="smtxt"></span></div>
+  <ol id="slist"></ol>
+  <div class="row"><button type="button" class="go" id="sup" data-t="upload"></button> <button type="button" id="sclr" data-t="clear"></button> <span class="msg" id="sumsg"></span></div>
+  <p class="small" data-t="note"></p>
+</section>
+
+<footer>
+  <nav><a href="../installer/" data-t="navInstall"></a><a href="https://github.com/sog-maker/trapstation-os">SOURCE</a></nav>
+  TRAPSTATION · based on BBL JAM BOX by Blair (blairysbeatlab) and Felucca by Leo Kuroshita, Hügelton Instruments · GPL-3.0 · font BLB Pixel 7 Chunky by Blair, SIL OFL 1.1 · the logos are not under the GPL<br>
+  M-VAVE and FM-1 are trademarks of their respective owners. TRAPSTATION is not affiliated with or endorsed by them.
+</footer>
+</main>
+<script type="module">
+/*LIB*/
+const TEXT = {
+  de: {
+    sub: "SAMPLES · SOUNDS AUFS FM-1", h1: "1. AUSSCHNITT WÄHLEN",
+    p1: "Eine Sounddatei wählen, <b>START</b> und <b>ENDE</b> setzen, dann <b>SCHREIBEN</b> drücken, um ihn in die Liste aufzunehmen.",
+    formats: "WAV, MP3, OGG oder FLAC.", start: "START", end: "ENDE", loop: "LOOP", rate: "RATE", norm: "NORMALISIEREN", write: "Schreiben",
+    loophelp: "Loop finden: LOOP ankreuzen, ABSPIELEN drücken und START und ENDE beim Abspielen verschieben. Für feine Schritte einen Regler anklicken und die Pfeiltasten nutzen.",
+    h2: "2. LISTE HOCHLADEN",
+    p2: "Das FM-1 per USB anschließen und <b>HOCHLADEN</b> drücken. Die Liste ersetzt den ganzen Sample-Speicher des FM-1. Eine SAMPLE-Spur spielt die Plätze S01 bis S32 (Regler SLOT), und das FM-1 behält sie auch ausgeschaltet.",
+    memory: "SPEICHER", upload: "Aufs FM-1 hochladen", clear: "Speicher leeren",
+    note: "Nur Chrome oder Edge. Vorher andere Programme schließen, die das FM-1 nutzen. Während des Ladens ist der Ton aus. Dieser Browser merkt sich die Liste, sodass du sie beim nächsten Mal ergänzen kannst. Eine komplette Sicherung (mit Sounds, Kits und Jam) gibt es auf der Installer-Seite.",
+    navInstall: "INSTALLER",
+  },
+  en: {
+    sub: "SAMPLES · SOUNDS INTO YOUR FM-1", h1: "1. PICK A PART",
+    p1: "Choose a sound file, set <b>START</b> and <b>END</b>, then press <b>WRITE</b> to add it to the list.",
+    formats: "WAV, MP3, OGG or FLAC.", start: "START", end: "END", loop: "LOOP", rate: "RATE", norm: "NORMALISE", write: "Write",
+    loophelp: "To find a loop: tick LOOP, press PLAY and move START and END as it plays. For tiny moves, click a slider and use the arrow keys.",
+    h2: "2. UPLOAD THE LIST",
+    p2: "Connect the FM-1 by USB and press <b>UPLOAD</b>. The list replaces everything in the FM-1's sample memory. A SAMPLE track plays slots S01 to S32 (its SLOT knob), and the FM-1 keeps them when it's switched off.",
+    memory: "MEMORY", upload: "Upload to the FM-1", clear: "Clear memory",
+    note: "Chrome or Edge only. Close other apps that use the FM-1 first. The sound stops while it loads. This browser keeps your list, so next time you can add to it. A complete backup (with sounds, kits and jam) is on the installer page.",
+    navInstall: "INSTALL",
+  },
+};
+
+const DE = [
+  [/^Play$/, "Abspielen"], [/^Stop$/, "Stopp"], [/^Remove$/, "Entfernen"],
+  [/^WAV, MP3, OGG or FLAC\.$/, "WAV, MP3, OGG oder FLAC."],
+  [/^(.+) of (.+) · (\d+) of (\d+) slots$/, "$1 von $2 · $3 von $4 Plätzen"],
+  [/^Not on the FM-1 until you upload\.$/, "Erst nach dem Hochladen auf dem FM-1."],
+  [/^(.*) · (.*) s · part (.*)–(.*) s \((.*) s\)$/, "$1 · $2 s · Ausschnitt $3–$4 s ($5 s)"],
+  [/^Reading (.*)…$/, "Lese $1 …"],
+  [/^Could not read that file\. Try a WAV, MP3 or OGG\.$/, "Diese Datei lässt sich nicht lesen. Eine WAV, MP3 oder OGG versuchen."],
+  [/^All (\d+) slots are full\.$/, "Alle $1 Plätze sind belegt."],
+  [/^That part is too short\.$/, "Dieser Ausschnitt ist zu kurz."],
+  [/^Does not fit\. (.*) left: (.*) s at this rate\. Shorten it or pick a lower rate\.$/, "Passt nicht. Noch $1 frei: $2 s bei dieser Rate. Kürzen oder eine niedrigere Rate wählen."],
+  [/^Written to (S\d+): (.*) s, (.*)\.$/, "In $1 geschrieben: $2 s, $3."],
+  [/^List cleared\. Upload to empty the FM-1's memory\.$/, "Liste geleert. Hochladen, um den Speicher des FM-1 zu leeren."],
+  [/^The FM-1 was disconnected\..*$/, "Die Verbindung zum FM-1 ist weg. Wieder einstecken und noch einmal Hochladen drücken: es macht dort weiter, wo es aufgehört hat."],
+  [/^This browser has no Web MIDI.*$/, "Dieser Browser hat kein Web MIDI: Chrome oder Edge nutzen."],
+  [/^The browser did not allow MIDI access\..*$/, "Der Browser hat MIDI nicht erlaubt. Erlauben (Schloss-Symbol an der Adresse) und noch einmal versuchen."],
+  [/^Looking for the FM-1…$/, "FM-1 wird gesucht …"],
+  [/^FM-1 not found\..*$/, "FM-1 nicht gefunden. USB-Kabel prüfen und andere Programme schließen, die es nutzen (DAW oder andere Musik-App)."],
+  [/^The FM-1 did not answer\..*$/, "Das FM-1 antwortet nicht. Zuerst TRAPSTATION installieren (Installer-Seite), dann noch einmal versuchen."],
+  [/^The FM-1 refused the upload \((.*)\)\.$/, "Das FM-1 hat das Hochladen abgelehnt ($1)."],
+  [/^Those samples don't fit this firmware's memory \((.*) bytes\)\..*$/, "Diese Samples passen nicht in den Speicher dieser Firmware ($1 Bytes). Welche entfernen oder zuerst das FM-1 aktualisieren."],
+  [/^The FM-1 stopped answering\..*$/, "Das FM-1 antwortet nicht mehr. Noch einmal Hochladen drücken: es macht dort weiter, wo es aufgehört hat."],
+  [/^Writing the FM-1's memory failed\..*$/, "Das Schreiben in den Speicher des FM-1 ist fehlgeschlagen. Noch einmal Hochladen drücken: es macht dort weiter, wo es aufgehört hat."],
+  [/^Uploading… (\d+%)$/, "Lade hoch … $1"],
+  [/^The FM-1 did not confirm\..*$/, "Das FM-1 hat nicht bestätigt. Noch einmal Hochladen drücken."],
+  [/^The FM-1 says the samples don't check out\..*$/, "Das FM-1 meldet fehlerhafte Samples. Noch einmal Hochladen drücken."],
+  [/^Done: (\d+) samples? on the FM-1(.*)$/, "Fertig: $1 Sample(s) auf dem FM-1$2"],
+  [/^Done: the FM-1's sample memory is empty(.*)$/, "Fertig: der Sample-Speicher des FM-1 ist leer$1"],
+  [/ \(nothing had changed\)\.$/, " (es hatte sich nichts geändert)."],
+];
+let lang = (() => {
+  try { const s = localStorage.getItem("trapstation-lang"); if (s === "de" || s === "en") return s; } catch {}
+  return (navigator.language || "de").toLowerCase().startsWith("de") ? "de" : "en";
+})();
+function tr(s) {
+  if (lang !== "de") return s;
+  let o = String(s);
+  for (const [re, to] of DE) if (re.test(o)) { o = o.replace(re, to); if (re.source.startsWith("^")) break; }
+  return o.replace(/ \(nothing had changed\)\.$/, " (es hatte sich nichts geändert).");
+}
+let ui = null;
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-t]").forEach((e) => { e.textContent = TEXT[lang][e.dataset.t]; });
+  document.querySelectorAll("[data-h]").forEach((e) => { e.innerHTML = TEXT[lang][e.dataset.h]; });
+  document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  if (ui) ui.refresh();
+}
+document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => {
+  lang = b.dataset.lang;
+  try { localStorage.setItem("trapstation-lang", lang); } catch {}
+  applyLang();
+}));
+applyLang();
+const KEEP = "felucca-samples";
+function loadList() {
+  try {
+    const b64 = localStorage.getItem(KEEP);
+    return b64 ? parseImage(Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))) : [];
+  } catch { return []; }
+}
+function keepList(list) {
+  try {
+    const img = buildImage(list);
+    let s = "";
+    for (let i = 0; i < img.length; i += 4096) s += String.fromCharCode.apply(null, img.subarray(i, i + 4096));
+    localStorage.setItem(KEEP, btoa(s));
+  } catch {}
+}
+ui = mountUploader({ initial: loadList(), changed: keepList, upload: uploadSamples, tr });
+document.getElementById("spv").textContent = tr("Play");
+</script>
+</body>
+</html>

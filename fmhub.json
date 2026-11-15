@@ -1,0 +1,11 @@
+{
+  "what": "A trap and phonk groovebox: six tracks with 808s, FM keys, bells and pads, generators for drums, hats, chords and bass, a sampler with slices, a piano roll, a live performance page with mutes, effect throws and bar jumps, and tape, VHS and vinyl colour on the master.",
+  "author": "Schlensog Audio Lab",
+  "kinds": [
+    "groove"
+  ],
+  "image": "assets/logo/fmhub-card.png",
+  "color": "#c62d39",
+  "sounds": "own",
+  "cheat": "https://github.com/sog-maker/trapstation-os/raw/main/docs/cheatsheet/Trapstation-Cheat-Sheet.pdf"
+}

@@ -1,0 +1,537 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only
+     Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments; Blair (blairysbeatlab), BBL JAM BOX;
+     TRAPSTATION (phase 9a: the cassette look, German; 9b: backup and restore, web/fm1bk.js) -->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRAPSTATION Installer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%23262B2B%22/%3E%3Crect x=%222%22 y=%226%22 width=%2212%22 height=%224%22 fill=%22%238E1C18%22/%3E%3C/svg%3E">
+<style>
+
+@font-face { font-family: "BLBPixel"; src: url("/*FONT*/") format("truetype"); font-display: swap; }
+:root { color-scheme: light; --bg: #DDD8CB; --label: #EBE7DF; --ink: #121210; --red: #8E1C18; --deep: #262B2B;
+        --dim: #4E4B44; --line: #B9B3A4; --ok: #2E6B3A; }
+html, body { background: var(--bg); }
+body { margin: 0; color: var(--ink); font: 15px/1.5 "BLBPixel", ui-monospace, monospace; letter-spacing: .03em; }
+main { max-width: 660px; margin: 0 auto; padding: 24px 16px 32px; }
+a { color: inherit; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin: 0 0 14px; }
+.top img { width: 72px; height: 72px; image-rendering: pixelated; border-radius: 12px; flex: none; background: var(--deep);
+           box-shadow: 0 0 0 3px var(--deep); }
+.top div { flex: 1; min-width: 0; }
+.top h1 { margin: 0; font-size: 30px; line-height: 1; font-weight: normal; letter-spacing: .02em; white-space: nowrap; }
+.top .sub { margin: 4px 0 0; color: var(--dim); }
+
+.band { height: 10px; margin: 0 0 18px; border-radius: 2px; background: linear-gradient(var(--red) 0 70%, transparent 70% 80%, var(--deep) 80%); }
+.pop { display: block; background: var(--label); color: var(--ink); border: 2px solid var(--line); border-radius: 12px;
+       padding: 14px 18px; margin: 18px 0 0; }
+.pop h2, .pop summary { margin: 0; font-size: 24px; line-height: 1.1; font-weight: normal; color: var(--red); }
+.pop h2 { margin-bottom: 8px; text-transform: uppercase; }
+.pop summary { font-size: 20px; cursor: pointer; }
+.pop p { margin: 0 0 10px; }
+.pop p:last-child { margin-bottom: 0; }
+.pop details[open] summary, details.pop[open] summary { margin-bottom: 10px; }
+.pop.main { border-color: var(--deep); box-shadow: inset 0 6px 0 var(--red); padding-top: 20px; }
+.warn { color: var(--red); }
+.tip { border-left: 6px solid var(--red); background: var(--bg); padding: 8px 12px; border-radius: 6px; font-weight: bold; }
+button, input[type=file]::file-selector-button { font: inherit; letter-spacing: inherit; padding: 6px 14px; border-radius: 8px;
+  border: 2px solid var(--deep); background: var(--deep); color: var(--label); cursor: pointer; text-transform: uppercase; }
+input[type=file] { font: inherit; max-width: 100%; margin-top: 6px; }
+input[type=file]::file-selector-button { margin-right: 10px; }
+button:disabled { opacity: .35; cursor: default; }
+button.go { background: var(--red); border-color: var(--red); color: #fff; font-size: 20px; padding: 8px 22px; }
+button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.langs { flex: none; display: flex; gap: 4px; }
+.langs button { background: transparent; color: var(--ink); border-color: var(--line); padding: 3px 8px; text-transform: none; }
+.langs button[aria-pressed=true] { background: var(--deep); color: var(--label); border-color: var(--deep); }
+.tick { display: flex; align-items: flex-start; gap: 8px; }
+input[type=checkbox] { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--red); }
+.small { font-size: 14px; color: var(--dim); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.info { font-size: 14px; color: var(--ok); }
+.info:empty { display: none; }
+progress { display: block; width: 100%; height: 12px; margin: 18px 0 0; appearance: none; -webkit-appearance: none; border: 2px solid var(--deep);
+           border-radius: 4px; overflow: hidden; background: var(--label); }
+progress::-webkit-progress-bar { background: var(--label); }
+progress::-webkit-progress-value { background: var(--red); }
+progress::-moz-progress-bar { background: var(--red); }
+#status { margin: 10px 0 0; min-height: 1.5em; font-size: 18px; }
+pre { color: var(--dim); font: 13px/1.5 ui-monospace, monospace; letter-spacing: 0; white-space: pre-wrap; margin: 10px 0 0; }
+pre:empty { display: none; }
+footer { margin: 22px 0 0; color: var(--dim); font-size: 13px; text-align: center; }
+footer nav { font-size: 15px; margin-bottom: 8px; }
+footer nav a { margin: 0 8px; color: var(--ink); }
+@media (max-width: 520px) { .top { gap: 12px; flex-wrap: wrap; } .top h1 { font-size: 24px; } .top img { width: 56px; height: 56px; }
+  .pop { padding: 12px 14px; } }
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+  <img src="/*LOGO*/" alt="TRAPSTATION Logo" width="72" height="72">
+  <div><h1>TRAPSTATION</h1><p class="sub" data-t="sub"></p></div>
+  <div class="langs" role="group" aria-label="Sprache / Language">
+    <button type="button" data-lang="de">DE</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="ja">日本語</button>
+  </div>
+</header>
+<div class="band"></div>
+
+<section class="pop main">
+  <h2 data-t="install"></h2>
+  <p data-t="intro"></p>
+  <p class="warn" data-t="warn"></p>
+  <p class="small" data-t="direct"></p>
+  <p class="small" data-t="beta"></p>
+  <p class="small"><span data-t="brick"></span>
+    <a href="https://github.com/kurogedelic/FM-1-transporter" target="_blank" rel="noopener">FM-1-transporter</a></p>
+  <p><button id="go" class="go" disabled data-t="install"></button></p>
+  <p class="tip" data-t="tip"></p>
+</section>
+
+<section class="pop">
+  <h2 data-t="bkTitle"></h2>
+  <p data-t="bkIntro"></p>
+  <p class="row"><button id="bk-go" disabled data-t="bkGo"></button></p>
+  <p><label><span data-t="bkFile"></span><br><input id="bk-file" type="file" accept=".json,application/json"></label></p>
+  <p class="info" id="bk-info"></p>
+  <p class="small"><label class="tick"><input id="bk-smp" type="checkbox" checked> <span data-t="bkSmp"></span></label></p>
+  <p class="row"><button id="rs-go" disabled data-t="rsGo"></button></p>
+  <p class="small" data-t="bkNote"></p>
+  <h2 data-t="faTitle"></h2>
+  <p data-t="faIntro"></p>
+  <p class="row"><button id="fa-go" disabled data-t="faGo"></button></p>
+</section>
+
+<details class="pop">
+  <summary data-t="fileTitle"></summary>
+  <p class="small" data-t="fileHelp"></p>
+  <p><label><span data-t="fileLabel"></span><br><input id="pkg-file" type="file" accept=".fwsc"></label></p>
+</details>
+
+<details class="pop">
+  <summary data-t="stockTitle"></summary>
+  <p class="small" data-t="back"></p>
+  <p class="small"><a href="https://www.m-vave.com/download" target="_blank" rel="noopener">M-VAVE Downloads</a></p>
+  <p><label><span data-t="stockFile"></span><br><input id="stock-file" type="file" accept=".fwsc"></label></p>
+  <p><button id="stock-go" disabled data-t="stockGo"></button></p>
+  <p class="small" data-t="stockBackup"></p>
+  <p class="small"><label class="tick"><input id="stock-recovery" type="checkbox"> <span data-t="stockRecovery"></span></label></p>
+</details>
+
+<progress id="bar" max="100" value="0"></progress>
+<p id="status" role="status"></p>
+<pre id="log"></pre>
+
+<footer>
+  <nav><a href="../samples/">SAMPLES</a><a href="https://github.com/sog-maker/trapstation-os" target="_blank" rel="noopener">SOURCE</a></nav>
+  TRAPSTATION: a modified version of BBL JAM BOX by Blair (blairysbeatlab), itself a modified version of Felucca by Leo Kuroshita (@kurogedelic), <a href="https://hugelton.com" target="_blank" rel="noopener">Hügelton Instruments</a>, with its shared engine code (Felucca-Engines, MIT) and Fukiai icons (MIT).<br>
+  Second core: after X0X (charlesvestal), Melodee (keremimo) and Jangada (zednaked), GPL-3.0. Font: BLB Pixel 7 Chunky by Blair (SIL OFL 1.1). The logos are not under the GPL.<br>
+  The package also holds three JieLi AC79 SDK files, uboot.boot, cfg_tool.bin and eq_cfg_hw.bin (JieLi Technology, Apache-2.0). <a href="../../firmware/LICENSING.md">Licences</a>: <a href="../../firmware/LICENSE">GPL-3.0</a>, <a href="../../firmware/LICENSES/Apache-2.0.txt">Apache-2.0</a>, <a href="../../firmware/LICENSES/">all</a>.<br>
+  Not made or supported by M-VAVE. M-VAVE and FM-1 are trademarks of their respective owners.<br>
+  <span data-t="license"></span> <a href="https://github.com/sog-maker/trapstation-os" target="_blank" rel="noopener">github.com/sog-maker/trapstation-os</a>
+</footer>
+</main>
+<script type="module">
+/*LIB*/
+const $ = (id) => document.getElementById(id);
+const TEXT = {
+  de: {
+    sub: "INSTALLER · SICHERUNG",
+    intro: "FM-1 per USB anschließen. (Funktioniert in Chrome oder Edge.)",
+    warn: "Während des Schreibens das USB-Kabel nicht abziehen.",
+    install: "Installieren",
+    fileTitle: "Aus einer Datei installieren (Testversionen)",
+    fileHelp: "Die erhaltene TRAPSTATION-OS-.fwsc-Datei auswählen, dann oben „Installieren“ drücken. Der Browser prüft die Datei selbst; sie wird nirgendwohin gesendet.",
+    fileLabel: "TRAPSTATION-OS-.fwsc-Datei", fileReady: "Bereit zum Installieren: ", fileBad: "Keine TRAPSTATION-OS-Datei: ",
+    tip: "Tipp für den besten Klang: Nach der Installation auf der Seite CLOCK den 4. Regler (CPU) nach rechts drehen und das FM-1 aus- und einschalten. Dann rechnet der zweite Kern mit (Anzeige „2CPU“): weniger Last und ein vollerer Sound.",
+    direct: "Das USB-Kabel direkt am Computer anschließen: KEIN USB-HUB (ein Hub kann die Verbindung abbrechen und das FM-1 hängen lassen). Das FM-1 vorher laden und dabeibleiben, bis „Fertig“ erscheint: Computer nicht schlafen lassen, diese Seite nicht schließen oder neu laden. Wenn etwas schiefgeht, die Meldung unten kopieren, bevor du neu lädst. Kein Probe oder Transporter nötig.",
+    brick: "Falls eine Installation scheitert und das FM-1 nicht mehr startet, braucht die Rettung einen Transporter:",
+    beta: "TRAPSTATION ist eine Beta-Firmware. Für Schäden oder Fehlfunktionen am FM-1 durch diese eigene Firmware übernimmt niemand eine Haftung. Nutzung auf eigenes Risiko.",
+    bkTitle: "Sichern & Wiederherstellen",
+    bkIntro: "Sichert Sounds, Kits, die letzte Jam, die Einstellungen und die Samples des FM-1 in eine Datei auf diesem Computer – und spielt sie später zurück. Die Wiedergabe stoppt dabei.",
+    bkGo: "Jetzt sichern", bkFile: "Sicherungsdatei (.json) zum Wiederherstellen", bkSmp: "Samples mit wiederherstellen (ersetzt den Sample-Speicher)",
+    rsGo: "Wiederherstellen",
+    bkNote: "Ab TRAPSTATION 0.9. Die Datei bleibt auf diesem Computer. Nach dem Wiederherstellen startet das FM-1 neu.",
+    faTitle: "Werkszustand",
+    faIntro: "Löscht deine eigenen Sounds, Kits, Samples und die letzte Jam auf dem FM-1. Danach sind nur noch die Werks-Presets, die zwei Werks-Kits und die Werkssounds da. Die Einstellungen (z. B. 2CPU) bleiben. Vorher wird alles in eine Datei gesichert.",
+    faGo: "Sichern und Werkszustand herstellen",
+    faConfirm: "Alle eigenen Sounds, Kits, Samples und die letzte Jam werden vom FM-1 gelöscht. Vorher wird eine Sicherung im Download-Ordner gespeichert. Weiter?",
+    faRun: "Werkszustand wird hergestellt ", faDone: "Fertig. Das FM-1 ist im Werkszustand neu gestartet. Die Sicherung liegt im Download-Ordner.",
+    bkFind: "FM-1 wird gesucht …", bkObj: "Sounds, Kits und Jam ", bkSmpRead: "Samples ", bkDone: "Gesichert: ",
+    bkSaved: (o, s) => `${o} Speicherbereiche, ${s} Samples. Die Datei liegt im Download-Ordner.`,
+    bkFileOk: (o, s, f, c) => `Sicherung von ${f || "?"} vom ${c ? new Date(c).toLocaleString("de-DE") : "?"}: ${o} Speicherbereiche, ${s} Samples.`,
+    bkFileNoSmp: "Diese Sicherung enthält keine Samples: der Sample-Speicher bleibt, wie er ist.",
+    rsConfirm: "Sounds, Kits, die letzte Jam und die Einstellungen auf dem FM-1 werden durch die Sicherung ersetzt. Weiter?",
+    rsConfirmSmp: "Sounds, Kits, die letzte Jam, die Einstellungen UND der Sample-Speicher auf dem FM-1 werden durch die Sicherung ersetzt. Weiter?",
+    rsSmp: "Samples werden geschrieben ", rsObj: "Sounds, Kits und Jam werden geschrieben ", rsReboot: "FM-1 startet neu …",
+    rsDone: "Wiederhergestellt. Das FM-1 ist mit der Sicherung neu gestartet.",
+    bkOld: "Diese Firmware kann noch nicht sichern (erst ab TRAPSTATION 0.9). Zuerst die aktuelle Version installieren. Gemeldet: ",
+    bkRefused: "Das FM-1 hat die Anfrage abgelehnt. Code ", bkLost: "Das FM-1 antwortet nicht mehr. USB neu einstecken und noch einmal drücken.",
+    bkCrc: "Die gelesenen Daten stimmen nicht (Prüfsumme). Noch einmal sichern.", bkWrite: "Das Schreiben in den Speicher des FM-1 ist fehlgeschlagen. Noch einmal drücken.",
+    bkBadFile: "Das ist keine gültige TRAPSTATION-Sicherung ", bkSmpFull: "Die Samples der Sicherung passen nicht in den Speicher dieser Firmware.",
+    back: "Die offizielle FM-1 V15 bei M-VAVE herunterladen und die unveränderte FM-1.fwsc auswählen. Der Browser prüft sie lokal; sie wird an keinen Server gesendet.",
+    stockTitle: "Zurück zur offiziellen V15", stockFile: "Offizielle FM-1.fwsc", stockGo: "Sichern und zurück zur offiziellen V15",
+    stockBackup: "Vorher werden Sounds, Kits, die letzte Jam, die Einstellungen und die Samples in eine Datei gesichert. Die offizielle V15 kann sie nicht öffnen; nach einer Rückkehr zu TRAPSTATION lassen sie sich wiederherstellen.",
+    stockRecovery: "Abgebrochenes Update fortsetzen: Ich habe bereits eine Sicherung auf diesem Computer",
+    stockValid: "Offizielle V15 geprüft", stockConfirm: "Ist die Sicherungsdatei auf diesem Computer gespeichert? Weiter, um zur offiziellen V15 zurückzukehren.",
+    stockNeedBackup: "Aus dem Update-Modus lässt sich nichts sichern. Nur „fortsetzen“ ankreuzen, wenn schon eine Sicherung existiert.",
+    stockNoBackup: "Diese Firmware kann nicht sichern. Die Rückkehr zur offiziellen V15 löscht die gespeicherten Sounds, Kits und Samples (V15 kann sie nicht nutzen). Weiter?",
+    stockError: "Offizielle Firmware nicht prüfbar: ",
+    nomidi: "Dieser Browser kann das nicht. Die Seite in Chrome oder Edge öffnen.", loadfail: "Konnte nicht laden: ",
+    start: "Start", verify: "Prüfen", loader: "Wechsel in den Update-Modus", write: "Schreiben",
+    reboot: "Neustart", done: "Fertig", stopped: "Angehalten. USB neu einstecken und noch einmal „Installieren“ drücken.",
+    error: "Fehler: ",
+    denied: "MIDI (SysEx) wurde nicht erlaubt. In den Website-Einstellungen (Adressleiste) MIDI erlauben und noch einmal drücken.",
+    notfound: "FM-1 nicht gefunden. USB-Kabel prüfen (ein Datenkabel), andere MIDI-Programme schließen und noch einmal drücken.",
+    model: "Das angeschlossene Gerät ist kein FM-1.",
+    lost: "Die USB-Verbindung ist weg. Neu einstecken und noch einmal drücken.",
+    noloader: "Das FM-1 im Update-Modus wurde nicht gefunden. USB neu einstecken und noch einmal „Installieren“ drücken (es bleibt im Update-Modus, bis es fertig ist).",
+    noreturn: "Das FM-1 ist nicht zurückgekommen. Aus- und wieder einschalten.",
+    mismatch: "Geschrieben, aber das FM-1 meldet eine andere Version: ",
+    badpkg: "Die Installationsdatei ist beschädigt. Seite neu laden.",
+    leave: "Es wird geschrieben. Seite nicht schließen.",
+    license: "GPL-3.0, ohne Gewährleistung. Quellcode:",
+  },
+  en: {
+    sub: "INSTALLER · BACKUP",
+    intro: "Connect the FM-1 by USB. (Works in Chrome or Edge.)",
+    warn: "Do not unplug the USB cable while writing.",
+    install: "Install",
+    fileTitle: "Install from a file (test builds)",
+    fileHelp: "Choose the TRAPSTATION .fwsc file you were given, then press Install above. The browser checks the file itself; it is not sent anywhere.",
+    fileLabel: "TRAPSTATION .fwsc file", fileReady: "Ready to install: ", fileBad: "Not a TRAPSTATION file: ",
+    tip: "Tip for the best sound: after installing, turn the 4th knob (CPU) on the CLOCK page to the right and switch the FM-1 off and on. The second core then helps out (it shows “2CPU”): less load and a fuller sound.",
+    direct: "Connect the USB cable directly to the computer: NO USB HUB (a hub can drop the connection and leave the FM-1 stuck). Charge the FM-1 first, and stay with it until it says Done: don't let the computer sleep, and don't close or refresh this page. If something goes wrong, copy the message below before refreshing. No probe or Transporter is needed.",
+    brick: "If an install fails and the FM-1 no longer starts, recovering it needs a Transporter:",
+    beta: "TRAPSTATION is a beta firmware. Nobody accepts responsibility if your FM-1 is damaged or misbehaves because of this custom firmware. Use it at your own risk.",
+    bkTitle: "Backup & restore",
+    bkIntro: "Saves the FM-1's sounds, kits, last jam, settings and samples into a file on this computer, and plays them back later. Playback stops while it runs.",
+    bkGo: "Back up now", bkFile: "Backup file (.json) to restore", bkSmp: "Restore the samples too (replaces the sample memory)",
+    rsGo: "Restore",
+    bkNote: "From TRAPSTATION 0.9. The file stays on this computer. The FM-1 restarts after a restore.",
+    faTitle: "Factory state",
+    faIntro: "Deletes your own sounds, kits, samples and the last jam on the FM-1. Afterwards only the factory presets, the two factory kits and the factory sounds are there. The settings (e.g. 2CPU) stay. Everything is backed up to a file first.",
+    faGo: "Back up and reset to factory state",
+    faConfirm: "All your own sounds, kits, samples and the last jam will be deleted from the FM-1. A backup is saved to your downloads first. Continue?",
+    faRun: "Resetting to factory state ", faDone: "Done. The FM-1 restarted in its factory state. The backup is in your downloads.",
+    bkFind: "Looking for the FM-1…", bkObj: "Sounds, kits and jam ", bkSmpRead: "Samples ", bkDone: "Saved: ",
+    bkSaved: (o, s) => `${o} storage areas, ${s} samples. The file is in your downloads folder.`,
+    bkFileOk: (o, s, f, c) => `Backup of ${f || "?"} from ${c ? new Date(c).toLocaleString("en-GB") : "?"}: ${o} storage areas, ${s} samples.`,
+    bkFileNoSmp: "This backup holds no samples: the sample memory stays as it is.",
+    rsConfirm: "The sounds, kits, last jam and settings on the FM-1 are replaced by the backup. Continue?",
+    rsConfirmSmp: "The sounds, kits, last jam, settings AND the sample memory on the FM-1 are replaced by the backup. Continue?",
+    rsSmp: "Writing samples ", rsObj: "Writing sounds, kits and jam ", rsReboot: "The FM-1 is restarting…",
+    rsDone: "Restored. The FM-1 restarted with the backup.",
+    bkOld: "This firmware cannot back up yet (TRAPSTATION 0.9 and later). Install the current version first. Reported: ",
+    bkRefused: "The FM-1 refused the request. Code ", bkLost: "The FM-1 stopped answering. Replug the USB cable and press again.",
+    bkCrc: "The data read does not check out (checksum). Back up again.", bkWrite: "Writing the FM-1's memory failed. Press again.",
+    bkBadFile: "Not a valid TRAPSTATION backup ", bkSmpFull: "The backup's samples don't fit this firmware's memory.",
+    back: "Get official FM-1 V15 from M-VAVE and select the unmodified FM-1.fwsc. The browser validates it locally; it is not sent to a server.",
+    stockTitle: "Return to official V15", stockFile: "Official FM-1.fwsc", stockGo: "Back up and return to official V15",
+    stockBackup: "Sounds, kits, the last jam, settings and samples are saved into a file first. Official V15 cannot open it; after going back to TRAPSTATION it can be restored.",
+    stockRecovery: "Resume an interrupted update: I already saved a backup to this computer",
+    stockValid: "Official V15 verified", stockConfirm: "Has the backup file been saved to this computer? Continue to return to official V15.",
+    stockNeedBackup: "An update loader cannot export a backup. Only select resume if you already saved a backup.",
+    stockNoBackup: "This firmware can't make a backup. Going back to official V15 erases the saved sounds, kits and samples (V15 can't use them). Continue?",
+    stockError: "Cannot validate official firmware: ",
+    nomidi: "This browser cannot do it. Open the page in Chrome or Edge.", loadfail: "Could not load: ",
+    start: "Starting", verify: "Verifying", loader: "Switching to update mode", write: "Writing",
+    reboot: "Restarting", done: "Done", stopped: "Stopped. Replug the USB cable and press Install again.",
+    error: "Error: ",
+    denied: "MIDI (SysEx) access was not allowed. Allow MIDI in the site settings (address bar) and press again.",
+    notfound: "FM-1 not found. Check the USB cable (a data cable), close other apps that use MIDI, and press again.",
+    model: "The connected device is not an FM-1.",
+    lost: "The USB connection was lost. Replug it and press again.",
+    noloader: "The FM-1 in update mode was not found. Replug the USB cable and press Install again (it stays in update mode until it is finished).",
+    noreturn: "The FM-1 did not come back. Power-cycle it.",
+    mismatch: "Written, but the FM-1 reports another version: ",
+    badpkg: "The file to install is damaged. Reload the page.",
+    leave: "Writing. Do not close the page.",
+    license: "GPL-3.0, no warranty. Source:",
+  },
+  ja: {
+    sub: "インストーラー · バックアップ",
+    intro: "FM-1 を USB で接続してください。（Chrome か Edge で使えます）",
+    warn: "書き込み中は USB を抜かないでください。",
+    install: "インストール",
+    fileTitle: "ファイルからインストール（テスト版）",
+    fileHelp: "受け取った TRAPSTATION の .fwsc ファイルを選び、上の「インストール」を押してください。ファイルはこのブラウザ内で確認され、サーバーには送られません。",
+    fileLabel: "TRAPSTATION の .fwsc ファイル", fileReady: "インストールの準備完了: ", fileBad: "TRAPSTATION のファイルではありません: ",
+    tip: "いちばん良い音で使うには：インストール後、CLOCK ページの 4 番目のノブ（CPU）を右に回し、FM-1 の電源を入れ直してください。2 つ目のコアが動き（「2CPU」と表示）、負荷が下がり音がより豊かになります。",
+    direct: "USB ケーブルはパソコンに直接つないでください（USB ハブは使わないでください。途中で切れて FM-1 が止まることがあります）。先に FM-1 を充電し、「完了しました」と出るまで離れないでください。パソコンをスリープさせたり、このページを閉じたり再読み込みしたりしないでください。問題が起きたら、再読み込みの前に下のメッセージをコピーしてください。Probe や Transporter などの機材は不要です。",
+    brick: "万一インストールに失敗して起動しなくなった場合は、復旧に Transporter が必要です:",
+    beta: "TRAPSTATION はベータ版のファームウェアです。このカスタムファームウェアを使ったことで FM-1 が壊れたり不具合が起きたりしても、誰も責任を負いません。自己責任でお使いください。",
+    bkTitle: "バックアップと復元",
+    bkIntro: "FM-1 の音色・キット・最後のジャム・設定・サンプルをこのパソコンのファイルに保存し、あとで書き戻します。実行中は再生が止まります。",
+    bkGo: "今すぐバックアップ", bkFile: "復元するバックアップファイル（.json）", bkSmp: "サンプルも復元する（サンプルメモリを置き換えます）",
+    rsGo: "復元",
+    bkNote: "TRAPSTATION 0.9 以降。ファイルはこのパソコンに残ります。復元後、FM-1 は再起動します。",
+    faTitle: "工場出荷状態",
+    faIntro: "FM-1 に保存した自分の音色・キット・サンプルと最後のジャムを消去します。その後は工場出荷のプリセット、2つの工場出荷キット、工場出荷の音色だけになります。設定（2CPU など）はそのままです。先にすべてをファイルにバックアップします。",
+    faGo: "バックアップして工場出荷状態に戻す",
+    faConfirm: "自分の音色・キット・サンプルと最後のジャムが FM-1 から消去されます。先にバックアップをダウンロードフォルダに保存します。続けますか？",
+    faRun: "工場出荷状態に戻しています ", faDone: "完了。FM-1 は工場出荷状態で再起動しました。バックアップはダウンロードフォルダにあります。",
+    bkFind: "FM-1 を探しています…", bkObj: "音色・キット・ジャム ", bkSmpRead: "サンプル ", bkDone: "保存しました: ",
+    bkSaved: (o, s) => `保存領域 ${o} 個、サンプル ${s} 個。ファイルはダウンロードフォルダにあります。`,
+    bkFileOk: (o, s, f, c) => `${f || "?"} のバックアップ（${c ? new Date(c).toLocaleString("ja-JP") : "?"}）: 保存領域 ${o} 個、サンプル ${s} 個。`,
+    bkFileNoSmp: "このバックアップにはサンプルがありません。サンプルメモリはそのままです。",
+    rsConfirm: "FM-1 の音色・キット・最後のジャム・設定をバックアップで置き換えます。続けますか？",
+    rsConfirmSmp: "FM-1 の音色・キット・最後のジャム・設定とサンプルメモリをバックアップで置き換えます。続けますか？",
+    rsSmp: "サンプル書き込み中 ", rsObj: "音色・キット・ジャム書き込み中 ", rsReboot: "FM-1 を再起動しています…",
+    rsDone: "復元しました。FM-1 はバックアップの内容で再起動しました。",
+    bkOld: "このファームウェアはまだバックアップできません（TRAPSTATION 0.9 以降）。先に最新版をインストールしてください。報告: ",
+    bkRefused: "FM-1 が要求を拒否しました。コード ", bkLost: "FM-1 が応答しません。USB を挿し直してもう一度押してください。",
+    bkCrc: "読み込んだデータが一致しません（チェックサム）。もう一度バックアップしてください。", bkWrite: "FM-1 のメモリへの書き込みに失敗しました。もう一度押してください。",
+    bkBadFile: "有効な TRAPSTATION のバックアップではありません ", bkSmpFull: "バックアップのサンプルがこのファームウェアのメモリに入りません。",
+    back: "M-VAVEから公式FM-1 V15を取得し、未変更のFM-1.fwscを選んでください。ファイルはこのブラウザ内で検証し、サーバーへ送りません。",
+    stockTitle: "公式V15に戻す", stockFile: "公式FM-1.fwsc", stockGo: "バックアップして公式V15へ戻す",
+    stockBackup: "先に音色・キット・最後のジャム・設定・サンプルをファイルに保存します。公式V15では開けませんが、TRAPSTATION に戻したあと復元できます。",
+    stockRecovery: "更新中断の再開：バックアップはすでにパソコンへ保存済み",
+    stockValid: "公式V15を確認しました", stockConfirm: "バックアップファイルをパソコンに保存できましたか？ 続けると公式V15へ戻します。",
+    stockNeedBackup: "書き込みモードからはバックアップできません。保存済みバックアップがある場合だけ、更新中断の再開にチェックしてください。",
+    stockNoBackup: "このファームウェアはバックアップできません。公式V15に戻すと、保存した音色・キット・サンプルは消えます（V15では使えません）。続けますか？",
+    stockError: "公式ファイルを確認できません: ",
+    nomidi: "このブラウザでは使えません。Chrome か Edge で開いてください。", loadfail: "読み込めませんでした: ",
+    start: "開始します", verify: "確認中", loader: "書き込みモードに切り替え中", write: "書き込み中",
+    reboot: "再起動中", done: "完了しました", stopped: "途中で止まりました。USB を挿し直してもう一度押してください。",
+    error: "エラー: ",
+    denied: "MIDI（SysEx）の使用が許可されませんでした。アドレスバーのサイト設定で MIDI を許可して、もう一度押してください。",
+    notfound: "FM-1 が見つかりません。USB ケーブル（データ通信用か）を確かめ、MIDI を使う他のアプリを閉じてから、もう一度押してください。",
+    model: "接続されている機器は FM-1 ではありません。",
+    lost: "USB の接続が切れました。挿し直してもう一度押してください。",
+    noloader: "書き込みモードの FM-1 が見つかりません。USB を挿し直してもう一度押してください（終わるまで書き込みモードのままです）。",
+    noreturn: "FM-1 が戻ってきません。電源を入れ直してください。",
+    mismatch: "書き込みは終わりましたが、FM-1 が別のバージョンを報告しています: ",
+    badpkg: "インストールするファイルが壊れています。ページを再読み込みしてください。",
+    leave: "書き込み中です。ページを閉じないでください。",
+    license: "GPL-3.0、無保証。ソース:",
+  },
+};
+const LANGS = ["de", "en", "ja"];
+let lang = (() => {
+  try { const s = localStorage.getItem("trapstation-lang"); if (LANGS.includes(s)) return s; } catch {}
+  const n = (navigator.language || "de").toLowerCase();
+  return n.startsWith("ja") ? "ja" : n.startsWith("en") ? "en" : "de";
+})();
+const t = (k) => TEXT[lang][k];
+let lastKey = null, lastArg = "", restoreSet = null;
+function showBackupInfo() {
+  const r = restoreSet;
+  $("bk-info").textContent = r ? t("bkFileOk")(r.objects.length, r.count, r.firmware, r.created) + (r.samples ? "" : " " + t("bkFileNoSmp")) : "";
+}
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-t]").forEach((e) => { e.textContent = t(e.dataset.t); });
+  document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  if (lastKey) $("status").textContent = t(lastKey) + lastArg;
+  showBackupInfo();
+}
+document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => {
+  lang = b.dataset.lang;
+  try { localStorage.setItem("trapstation-lang", lang); } catch {}
+  applyLang();
+}));
+const sayK = (k, arg = "") => { lastKey = k; lastArg = arg; $("status").textContent = t(k) + arg; };
+const say = (txt) => { lastKey = null; $("status").textContent = txt; };
+const log = (t) => { $("log").textContent += t + "\n"; };
+const sayErr = (e) => {
+  if (e && e.code && typeof TEXT[lang][e.code] === "string") sayK(e.code, e.detail || "");
+  else sayK("error", e && e.message);
+  log(String(e && e.stack || e));
+};
+let image = null;
+const meta = /*META*/;
+let product = meta.product;
+
+let writing = false, stock = null, stockFileEpoch = 0;
+const lockInstaller = (on) => {
+  writing = on;
+  $("go").disabled = on || !image; $("stock-go").disabled = on || !stock; $("stock-file").disabled = on;
+  $("stock-recovery").disabled = on; $("pkg-file").disabled = on;
+  $("bk-go").disabled = on || !navigator.requestMIDIAccess; $("bk-file").disabled = on;
+  $("bk-smp").disabled = on || !(restoreSet && restoreSet.samples);
+  $("rs-go").disabled = on || !restoreSet || !navigator.requestMIDIAccess;
+  $("fa-go").disabled = on || !navigator.requestMIDIAccess;
+};
+window.addEventListener("beforeunload", (e) => { if (writing) { e.preventDefault(); e.returnValue = t("leave"); } });
+applyLang();
+lockInstaller(false);
+
+(async () => {
+  if (!navigator.requestMIDIAccess) { sayK("nomidi"); return; }
+  try {
+    const r = await fetch(meta.pkg, { cache: "no-cache" });
+    if (!r.ok) throw new Error(`${meta.pkg}: HTTP ${r.status}`);
+    const pkg = new Uint8Array(await r.arrayBuffer());
+    if (productOf(pkg) !== meta.product) { sayK("badpkg"); return; }
+    if (product !== meta.product) return;
+    image = logicalImage(pkg);
+    say(`TRAPSTATION ${meta.version}`);
+    $("go").disabled = writing;
+  } catch (e) { sayK("loadfail", e.message); }
+})();
+
+async function midiAccess() {
+  try { return await navigator.requestMIDIAccess({ sysex: true }); }
+  catch (e) { sayK("denied"); return null; }
+}
+
+$("go").addEventListener("click", async () => {
+  if (writing) return;
+  lockInstaller(true);
+  const midi = await midiAccess();
+  if (!midi) { lockInstaller(false); return; }
+  try {
+    const up = new Updater(midi, log);
+    const total = 74 + 1167;
+    const step = (k, a) => {
+      log(`${k} ${a ?? ""}`);
+      if (k === "start") sayK("start");
+      if (k === "verify") { sayK("verify"); $("bar").value = (a / total) * 100; }
+      if (k === "loader") sayK("loader");
+      if (k === "write") { sayK("write"); $("bar").value = ((74 + a) / total) * 100; }
+      if (k === "reboot") sayK("reboot");
+      if (k === "done") { $("bar").value = 100; sayK("done"); }
+    };
+    const ota = await up.find((id) => /^ota-/i.test(id.model));
+    if (ota) {
+      ota.link.close();
+      sayK((await up.resume(image, step, product)) ? "done" : "stopped");
+    } else {
+      await up.install(image, product, step);
+    }
+  } catch (e) { sayErr(e); }
+  lockInstaller(false);
+});
+
+const pct = (d, n) => `${Math.round(d / Math.max(1, n) * 100)}%`;
+async function runBackup(midi) {
+  $("bar").value = 0;
+  const archive = await bkBackup(midi, (k, d, n) => {
+    if (k === "find") sayK("bkFind");
+    if (k === "obj") { sayK("bkObj", pct(d, n)); $("bar").value = d / n * 40; }
+    if (k === "smp") { sayK("bkSmpRead", pct(d, n)); $("bar").value = 40 + d / n * 60; }
+  });
+  bkSave(archive);
+  $("bar").value = 100;
+  log(`backup ${archive.firmware}: ${archive.content.objects} objects, ${archive.content.samples} samples`);
+  return archive;
+}
+$("bk-go").addEventListener("click", async () => {
+  if (writing) return;
+  lockInstaller(true);
+  const midi = await midiAccess();
+  try {
+    if (midi) {
+      const a = await runBackup(midi);
+      sayK("bkDone", t("bkSaved")(a.content.objects, a.content.samples));
+    }
+  } catch (e) { sayErr(e); }
+  lockInstaller(false);
+});
+$("bk-file").addEventListener("change", async () => {
+  restoreSet = null; showBackupInfo(); lockInstaller(false);
+  const file = $("bk-file").files[0];
+  if (!file) return;
+  try {
+    restoreSet = bkCheck(JSON.parse(await file.text()));
+    showBackupInfo();
+  } catch (e) { sayK("bkBadFile", file.name); log(String(e && e.message || e)); }
+  lockInstaller(false);
+});
+
+$("fa-go").addEventListener("click", async () => {
+  if (writing || !confirm(t("faConfirm"))) return;
+  lockInstaller(true);
+  const midi = await midiAccess();
+  try {
+    if (midi) {
+      await runBackup(midi);
+      $("bar").value = 0;
+      await bkRestore(midi, bkFactorySet(), true, (k, d, n) => {
+        if (k === "find") sayK("bkFind");
+        if (k === "smp") { sayK("faRun", "1/2 " + pct(d, n)); $("bar").value = d / n * 30; }
+        if (k === "obj") { sayK("faRun", "2/2 " + pct(d, n)); $("bar").value = 30 + d / n * 65; }
+        if (k === "reboot") { sayK("rsReboot"); $("bar").value = 97; }
+      });
+      $("bar").value = 100;
+      sayK("faDone");
+      log("factory state: sounds, kits, last jam and samples emptied; settings kept");
+    }
+  } catch (e) { sayErr(e); }
+  lockInstaller(false);
+});
+$("rs-go").addEventListener("click", async () => {
+  if (writing || !restoreSet) return;
+  const withSmp = $("bk-smp").checked && !!restoreSet.samples;
+  if (!confirm(t(withSmp ? "rsConfirmSmp" : "rsConfirm"))) return;
+  lockInstaller(true);
+  const midi = await midiAccess();
+  try {
+    if (midi) {
+      $("bar").value = 0;
+      await bkRestore(midi, restoreSet, withSmp, (k, d, n) => {
+        if (k === "find") sayK("bkFind");
+        if (k === "smp") { sayK("rsSmp", pct(d, n)); $("bar").value = d / n * 60; }
+        if (k === "obj") { sayK("rsObj", pct(d, n)); $("bar").value = (withSmp ? 60 : 0) + d / n * (withSmp ? 35 : 95); }
+        if (k === "reboot") { sayK("rsReboot"); $("bar").value = 97; }
+      });
+      $("bar").value = 100;
+      sayK("rsDone");
+    }
+  } catch (e) { sayErr(e); }
+  lockInstaller(false);
+});
+
+$("pkg-file").addEventListener("change", async () => {
+  const file = $("pkg-file").files[0];
+  if (!file || writing) return;
+  try {
+    const pkg = new Uint8Array(await file.arrayBuffer()), id = productOf(pkg);
+    if (file.size === STOCK_V15_SIZE || !/^FM-1_(5[0-6]|9\d)\d$/.test(id)) throw new Error(file.name);
+    image = logicalImage(pkg);
+    product = id;
+    sayK("fileReady", file.name);
+    lockInstaller(false);
+  } catch (e) { sayK("fileBad", (e && e.message) || file.name); }
+});
+
+$("stock-file").addEventListener("change", async () => {
+  const epoch = ++stockFileEpoch, file = $("stock-file").files[0]; stock = null; lockInstaller(false);
+  if (!file) return;
+  try {
+    if (file.size !== STOCK_V15_SIZE) throw new Error("FM-1 V15 / FM-1.fwsc");
+    const verified = await validateStockPackage(new Uint8Array(await file.arrayBuffer()));
+    if (epoch !== stockFileEpoch) return;
+    stock = verified; sayK("stockValid"); lockInstaller(false);
+  } catch (e) { if (epoch === stockFileEpoch) sayK("stockError", e.message); }
+});
+$("stock-go").addEventListener("click", async () => {
+  if (!stock || writing) return;
+  const selected = stock; lockInstaller(true);
+  try {
+    const midi = await midiAccess();
+    if (!midi) return;
+    const up = new Updater(midi, log);
+    const step = (k, n) => { log(`${k} ${n ?? ""}`); if (["start","verify","loader","write","reboot","done"].includes(k)) sayK(k); if (k === "done") $("bar").value = 100; };
+    const loader = await up.find(id => id.model === "ota-FM-1");
+    if (loader) {
+      loader.link.close();
+      if (!$("stock-recovery").checked) { sayK("stockNeedBackup"); return; }
+      if (!confirm(t("stockConfirm"))) return;
+      sayK(await up.resume(selected.image, step, selected.product) ? "done" : "stopped");
+    } else {
+      let saved = false;
+      try { await runBackup(midi); saved = true; }
+      catch (e) { if (e.code !== "bkOld") throw e; log(String(e.message)); }
+      if (!confirm(t(saved ? "stockConfirm" : "stockNoBackup"))) return;
+      await up.install(selected.image, selected.product, step);
+    }
+  } catch (e) { sayErr(e); }
+  finally { lockInstaller(false); }
+});
+</script>
+</body>
+</html>
