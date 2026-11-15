@@ -1,0 +1,106 @@
+# Installing TRAPSTATION OS
+
+Deutsch · Back to the README
+
+Custom firmware, at your own risk. TRAPSTATION OS is not made or supported by M-VAVE. Read this page once before
+you start. You can always go back to the official firmware.
+
+You need about 15 minutes, a computer with Chrome or Edge, and a USB data cable (the one that came with the FM-1
+works; some cheap cables only charge).
+
+The installer: https://sog-maker.github.io/trapstation-os/
+
+---
+
+## Before you start
+
+1. Use Chrome or Edge on a computer. Safari, Firefox and phones can't talk to the FM-1.
+2. Download the official V15 firmware and keep it, so you can go back later: FM-1_015.fwsc from
+   https://github.com/m-vave/fm1_open/blob/main/sdk/firmware/FM-1_015.fwsc (the Download raw file button).
+   Don't rename or change it: the installer checks that it is the exact official file.
+3. Close every other app that uses the FM-1: your DAW, M-VAVE's apps, other installer tabs.
+4. Plug the FM-1 straight into the computer: no USB hub, dock, keyboard or monitor port. A hub can drop the
+   connection half way and leave the FM-1 stuck.
+5. Charge the FM-1, and keep your laptop plugged in, so nothing sleeps or runs flat during the install.
+6. Stay with the computer until it says Done. Don't close or reload the page. If something goes wrong, copy or
+   photograph the message on the page before you reload it.
+
+---
+
+## Install the firmware
+
+1. Switch the FM-1 on, wait until it has started, and stop playback.
+2. Connect it by USB and open the installer.
+3. Click 1. Install the firmware · back up.
+4. Coming from an earlier TRAPSTATION? Click Back up now first: it saves your sounds, kits, last jam and samples
+   to a file on your computer.
+5. Click Install. If the browser asks to let the page control MIDI devices, click Allow.
+6. The status line shows Starting → Verifying → Switching to update mode → Writing → Restarting → Done. It takes a
+   few minutes. Do not unplug the USB cable while it is writing.
+7. After Done the FM-1 restarts: the pad logo, then the Studio Console with NEW, LOAD and RESUME.
+
+For the best sound: on the CLOCK page turn knob 4 (CPU) to the right and switch the FM-1 off and on. The screen
+then shows 2CPU: the second core is on, with more headroom for effects. The setting is kept.
+
+### If something goes wrong
+
+| You see | Do this |
+|---|---|
+| FM-1 not found | Is the FM-1 on? Is another app using it? Try another cable. Then click Install again. |
+| Nothing happens after Install | Nothing has been written. Reload the page, unplug the USB cable, wait for the "device removed" sound, plug it back in and click Install again. |
+| MIDI (SysEx) access was not allowed | Click the icon left of the address bar, allow MIDI devices, and click Install again. |
+| The update loader did not appear | Leave the FM-1 on. Unplug the USB cable, wait for the "device removed" sound, plug it back in and click Install again. It carries on where it stopped. |
+| Stopped or The USB connection was lost | Plug the cable back in and click Install again. |
+| The FM-1 did not come back | Switch the FM-1 off and on again. |
+
+If an install fails and the FM-1 no longer starts at all, recovering it needs extra hardware, the
+FM-1-transporter (https://github.com/kurogedelic/FM-1-transporter). This is why you never unplug while it is writing.
+
+---
+
+## Back up, restore, factory state
+
+All in the installer, under Backup & restore:
+
+- Back up now saves the sounds, kits, last jam, settings and samples into one file on your computer.
+- Restore puts a backup file back onto the FM-1 (tick the box to include the samples). The FM-1 restarts.
+- Back up and reset to factory state makes a backup first, then deletes your own sounds, kits, samples and last jam.
+  Afterwards the FM-1 has only the factory presets, the two factory kits (MEMPHIS 808, DR660 KIT) and the factory
+  sounds. Your settings (2CPU, LEDs, MIDI) stay.
+
+Installing a new version never deletes your sounds, kits or samples.
+
+## Load your own samples
+
+1. In the installer, click 2. Load samples.
+2. Pick a sound file (WAV, MP3, OGG or FLAC), choose the part you want with Start and End, press Write to
+   add it to the list. Up to 32 samples, about 11 seconds in total.
+3. Click Upload to the FM-1. The FM-1 shows SAMPLES LOADED when it is done.
+4. On the FM-1, choose a sampler sound; its SLOT knob picks S01 to S32.
+
+Each upload replaces the whole sample memory with the page's list; the page remembers the list in your browser.
+The Trap Station Desktop (https://github.com/sog-maker/trapstation-desktop) app does the same with more audio formats.
+
+---
+
+## Go back to the official firmware (V15)
+
+1. Switch the FM-1 on, stop playback, connect it and open the installer.
+2. Open Return to official V15.
+3. Under Official FM-1.fwsc, choose the FM-1_015.fwsc you downloaded. It should say Official V15 verified.
+4. Click Back up and return to official V15. Your TRAPSTATION sounds, kits and samples are saved to a file first
+   (V15 can't use them; restore them later when you come back).
+5. Wait for Done. The FM-1 restarts on V15.
+
+## Switch to or from another firmware
+
+TRAPSTATION carries its update loader, like Felucca and most firmwares on The Firmware Hub (https://thefirmwarehub.com/).
+You can install another firmware with its own installer (or the hub) and come back to TRAPSTATION with this one, in any
+order. Back up first: every firmware keeps its own data.
+
+---
+
+## Help
+
+Open an issue (https://github.com/sog-maker/trapstation-os/issues). Tell us what the installer's status line said and what the FM-1's
+screen shows.

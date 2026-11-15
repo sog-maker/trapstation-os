@@ -701,7 +701,7 @@ function bkSampleLen(img) {
   return used;
 }
 
-// The factory state (15.11.2026, the user: after a reset only the factory presets, the two factory kits and the
+// The factory state (15.11.2026: after a reset only the factory presets, the two factory kits and the
 // factory sounds): a restore set (as bkCheck makes) that empties what the user made, through the restore's own commands.
 // Each sound and kit object and the last jam get a 4-byte placeholder: the firmware takes an object of the wrong length
 // as none (gb_store.c gb_store_init: the slots empty, the factory kits on kit slots 1 and 2; jam_boot: under 8 bytes, a
