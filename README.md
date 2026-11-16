@@ -13,7 +13,10 @@ live performance page</p>
   <a href="https://sog-maker.github.io/trapstation-os/"><img src="https://img.shields.io/badge/install-in%20the%20browser-c62d39" alt="Install in the browser"></a>
 </p>
 
-<p align="center"><b>New in 1.1.0.0:</b> a new six-operator FM engine, 22 reworked keys, bells, organs, pads and leads,
+<p align="center"><b>New in 1.1.0.1:</b> the last jam no longer fills up (`LAST JAM FULL` in 1.1.0.0): please update ·
+<a href="https://github.com/sog-maker/trapstation-os/releases/tag/v1.1.0.1">the release notes</a></p>
+
+<p align="center"><b>New in 1.1:</b> a new six-operator FM engine, 22 reworked keys, bells, organs, pads and leads,
 twelve new sound pages, Undo, and a reworked desktop app · <a href="#whats-new-in-1100">what's new</a> ·
 <a href="https://github.com/sog-maker/trapstation-os/releases/tag/v1.1.0.0">the release notes</a></p>
 
@@ -34,6 +37,14 @@ your fingers. Every page draws what its knobs do, in one red-and-grey Workstatio
 TRAPSTATION OS is free software, a fork of [BBL JAM BOX](https://github.com/UnkleBlairy/BBL-JAM-BOX) by Blair, itself
 built on [Felucca](https://github.com/hugelton/Felucca) by Hügelton Instruments. It is not BBL JAM BOX and not Felucca:
 please report its behaviour [here](https://github.com/sog-maker/trapstation-os/issues).
+
+## What's new in 1.1.0.1
+
+- **The last jam fits again.** In 1.1.0.0 it filled up with little more than one bar of steps on every track, the
+  screen showed `LAST JAM FULL`, and from then on nothing was saved over power-off. The jam is stored packed now: six
+  tracks of 64 steps, five of them FM6, take a little over half of its room. No sound changes.
+- A jam of 1.1.0.0 is loaded and kept. Going back to 1.1.0.0 starts with a fresh jam.
+- [Trap Station Desktop 0.2.1](https://github.com/sog-maker/trapstation-desktop) reads the new jam.
 
 ## What's new in 1.1.0.0
 
@@ -70,12 +81,12 @@ your sounds, kits, last jam and samples to a file, and puts them back.
 **From The Firmware Hub:** TRAPSTATION is submitted to [thefirmwarehub.com](https://thefirmwarehub.com/), which installs
 firmwares in one click and switches between them.
 
-**With Python 3:** download `trapstation-os-1.1.0.0.fwsc` from the [latest release](https://github.com/sog-maker/trapstation-os/releases/latest)
+**With Python 3:** download `trapstation-os-1.1.0.1.fwsc` from the [latest release](https://github.com/sog-maker/trapstation-os/releases/latest)
 and, with this repository's `tools/` folder,
 
 ```
 pip install mido python-rtmidi
-python tools/fm1_install.py trapstation-os-1.1.0.0.fwsc
+python tools/fm1_install.py trapstation-os-1.1.0.1.fwsc
 ```
 
 **Connecting:** a USB **data** cable, straight into the computer (no hub, dock or monitor port), other music apps closed.
@@ -262,10 +273,10 @@ On Linux x86-64 or Ubuntu under WSL, with the JieLi toolchain and the AC79 SDK:
 ```
 tools/get_toolchain.sh
 git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git ~/fw-AC79_AIoT_SDK
-./build.sh --release 1.1.0.0
+./build.sh --release 1.1.0.1
 ```
 
-The tag `v1.1.0.0` builds the released package byte for byte. Everything else, the local installer and the online
+The tag `v1.1.0.1` builds the released package byte for byte. Everything else, the local installer and the online
 installer included: [docs/developer](docs/developer/).
 
 ## If the FM-1 does not start

@@ -516,17 +516,19 @@ static const uint8_t *smp_peaks(uint32_t sl)
     return smp_pk;
 }
 
-#define JAM_MAGIC (TRAP_FM6_TEST ? 0x364D414Au : 0x314D414Au)
+#define JAM_MAGIC (TRAP_FM6_TEST ? 0x374D414Au : 0x314D414Au)
+#define JAM_MAGIC6 0x364D414Au
 
 #define JAM_PART (ST_PAYLOAD_MAX - 4u)
 #define JAM_CAP (2u * JAM_PART)
+#define TF6_JAM_TRK (155u + 3u * 2u)
 static uint8_t jam_buf[JAM_CAP] __attribute__((section(".pool")));
 static uint8_t jam_old[JAM_CAP] __attribute__((section(".pool")));
 static uint8_t jam_img[ST_PAYLOAD_MAX] __attribute__((section(".pool")));
 static uint32_t jam_n, jam_oldn, jam_gen, jam_q0, jam_t;
 static uint8_t jam_pend;
 
-typedef struct { uint8_t *p; uint32_t n, cap, bad; } jam_io_t;
+typedef struct { uint8_t *p; uint32_t n, cap, bad, pk; } jam_io_t;
 static void jam_w(jam_io_t *w, const void *src, uint32_t len)
 {
     if (w->n + len > w->cap) {
@@ -557,6 +559,46 @@ static int jam_step_used(const step_t *s)
     return s->n || s->hit || s->acc || s->probability || s->flags || s->roll || s->time == ST_TIE || s->time == ST_LOCK;
 }
 
+#define JAM_SPACK 0x80u
+_Static_assert(sizeof(step_t) <= 16u && sizeof(step_t) < JAM_SPACK, "a step is one packed piece");
+static void jam_wb(jam_io_t *w, const void *src, uint32_t len)
+{
+    const uint8_t *b = (const uint8_t *)src;
+    uint32_t o, i, e, m;
+    if (!w->pk) {
+        jam_w(w, src, len);
+        return;
+    }
+    for (o = 0; o < len; o += 16u) {
+        e = len - o < 16u ? len - o : 16u;
+        for (i = m = 0; i < e; i++)
+            m |= (uint32_t)(b[o + i] != 0u) << i;
+        jam_w16(w, m);
+        for (i = 0; i < e; i++)
+            if (b[o + i])
+                jam_w8(w, b[o + i]);
+    }
+}
+static int jam_rb(jam_io_t *r, void *dst, uint32_t len)
+{
+    uint8_t *b = (uint8_t *)dst;
+    uint32_t o, i, e, m;
+    if (!r->pk)
+        return jam_r(r, dst, len);
+    for (o = 0; o < len && !r->bad; o += 16u) {
+        e = len - o < 16u ? len - o : 16u;
+        m = jam_r16(r);
+        if (m >> e)
+            r->bad = 1;
+        for (i = 0; i < e && !r->bad; i++) {
+            uint32_t v = (m >> i) & 1u ? jam_r8(r) : 0u;
+            if (b)
+                b[o + i] = (uint8_t)v;
+        }
+    }
+    return !r->bad;
+}
+
 typedef struct {
  uint8_t version,var[NTRK],live[NTRK],fresh[NTRK];
  gen_recipe_t recipe[NTRK];uint8_t eu[NTRK][3];
@@ -564,7 +606,7 @@ typedef struct {
 _Static_assert(sizeof(gen_store_t)==109u,"compact generation session tail");
 static uint32_t jam_make(uint8_t *out)
 {
-    jam_io_t w = {out, 0, JAM_CAP, 0};
+    jam_io_t w = {out, 0, JAM_CAP, 0, TRAP_FM6_TEST};
     uint32_t k, i, n;
     jam_w(&w, &(uint32_t){JAM_MAGIC}, 4);
     jam_w8(&w, song.sel);
@@ -573,25 +615,25 @@ static uint32_t jam_make(uint8_t *out)
     jam_w8(&w, G_COUNT);
     jam_w(&w, song.g, sizeof song.g);
     jam_w16(&w, sizeof pm_mac);
-    jam_w(&w, pm_mac, sizeof pm_mac);
+    jam_wb(&w, pm_mac, sizeof pm_mac);
     jam_w16(&w, sizeof fxl);
-    jam_w(&w, &fxl, sizeof fxl);
+    jam_wb(&w, &fxl, sizeof fxl);
     jam_w8(&w, motion.count);
     jam_w8(&w, motion.on);
     jam_w(&w, motion.event, motion.count * sizeof motion.event[0]);
     jam_w8(&w, P_COUNT);
-    jam_w8(&w, sizeof(step_t));
+    jam_w8(&w, (TRAP_FM6_TEST ? JAM_SPACK : 0u) | sizeof(step_t));
     for (k = 0; k < NTRK; k++) {
         const track_t *t = &trk[k];
         jam_w8(&w, t->eng_req);
-        jam_w(&w, t->p, sizeof t->p);
+        jam_wb(&w, t->p, sizeof t->p);
         for (i = n = 0; i < NSTEP; i++)
             n += (uint32_t)jam_step_used(&t->step[i]);
         jam_w8(&w, n);
         for (i = 0; i < NSTEP; i++)
             if (jam_step_used(&t->step[i])) {
                 jam_w8(&w, i);
-                jam_w(&w, &t->step[i], sizeof(step_t));
+                jam_wb(&w, &t->step[i], sizeof(step_t));
             }
     }
     for (k = n = 0; k < NTRK * 16u; k++)
@@ -608,7 +650,7 @@ static uint32_t jam_make(uint8_t *out)
     }
     if (!w.bad) {
         jam_w16(&w, sizeof acid);
-        jam_w(&w, acid, sizeof acid);
+        jam_wb(&w, acid, sizeof acid);
     }
     if (!w.bad) {
         jam_w16(&w, sizeof lastc + sizeof lastn);
@@ -633,16 +675,35 @@ static uint32_t jam_make(uint8_t *out)
             gs.var[k]=(uint8_t)gen_var[k];gs.live[k]=(uint8_t)gen_live[k];gs.fresh[k]=gen_fresh[k];
             gs.recipe[k]=gen_recipe[k];for(i=0;i<3u;i++)gs.eu[k][i]=(uint8_t)eu_cfg[k][i];
         }
-        if(w.n+2u+sizeof gs>w.cap)return 0;
-        jam_w16(&w,sizeof gs);jam_w(&w,&gs,sizeof gs);
+        jam_w16(&w,sizeof gs);jam_wb(&w,&gs,sizeof gs);
     }
-    if (!w.bad && w.n + 2u + sizeof smp_sl <= w.cap) {
+    if (!w.bad) {
         jam_w16(&w, sizeof smp_sl);
-        jam_w(&w, smp_sl, sizeof smp_sl);
+        jam_wb(&w, smp_sl, sizeof smp_sl);
     }
 #if TRAP_FM6_TEST
-    if(w.n+2u+sizeof tf6_edit>w.cap) return 0;
-    jam_w16(&w,sizeof tf6_edit); jam_w(&w,tf6_edit,sizeof tf6_edit);
+    if (!w.bad) {
+        uint32_t mask = 0, cnt = 0;
+        for (k = 0; k < NTRK; k++)
+            if (trk[k].eng_req == ENGI_FM6) {
+                mask |= 1u << k;
+                cnt++;
+            }
+        if (w.n + 2u + 1u + cnt * TF6_JAM_TRK > w.cap)
+            return 0;
+        jam_w16(&w, 1u + cnt * TF6_JAM_TRK);
+        jam_w8(&w, mask);
+        for (k = 0; k < NTRK; k++) {
+            uint8_t b[155];
+            if (!(mask & (1u << k)))
+                continue;
+            for (i = 0; i < 155u; i++)
+                b[i] = (uint8_t)clamp(tf6_edit[k][i], 0, 255);
+            jam_w(&w, b, 155);
+            for (i = 155u; i < 158u; i++)
+                jam_w16(&w, (uint16_t)tf6_edit[k][i]);
+        }
+    }
 #endif
     return w.bad?0:w.n;
 }
@@ -658,8 +719,9 @@ static int jam_apply(uint8_t *in, uint32_t len)
 
     int16_t g[G_COUNT];
     jam_r(&r, &magic, 4);
-    if (magic != JAM_MAGIC)
+    if (magic != JAM_MAGIC && !(TRAP_FM6_TEST && magic == JAM_MAGIC6))
         return 0;
+    r.pk = TRAP_FM6_TEST && magic == JAM_MAGIC;
     sel = jam_r8(&r);
     rel = jam_r8(&r);
     fade = jam_r8(&r);
@@ -675,17 +737,19 @@ static int jam_apply(uint8_t *in, uint32_t len)
         song.g[JAM_G[i]] = (int16_t)clamp(g[JAM_G[i]], GP[JAM_G[i]].min, GP[JAM_G[i]].max);
     sz = jam_r16(&r);
     if (sz == sizeof pm_mac) {
-        jam_r(&r, pm_mac, sz);
+        jam_rb(&r, pm_mac, sz);
         for (i = 0; i < PM_NM; i++)
             if (pm_mac[i].n > PM_N)
                 pm_mac[i].n = 0;
     } else {
-        jam_r(&r, 0, sz);
+        jam_rb(&r, 0, sz);
     }
     pm_rel = (uint8_t)(rel > 16u ? 16u : rel);
     pm_fade = (uint8_t)(fade > 4u ? 0u : fade);
     sz = jam_r16(&r);
-    if (sz == 2u + 32u + 16u * 11u || sz == 2u + 32u + 16u * 15u) {
+    if (r.pk) {
+        jam_rb(&r, sz == sizeof fxl ? (void *)&fxl : 0, sz);
+    } else if (sz == 2u + 32u + 16u * 11u || sz == 2u + 32u + 16u * 15u) {
         uint8_t ob[2u + 32u + 16u * 15u];
         uint32_t ng = (sz - 34u) / 16u;
         uint16_t t16;
@@ -725,8 +789,14 @@ static int jam_apply(uint8_t *in, uint32_t len)
         track_t *t = &trk[k];
         int16_t in[128], def[P_COUNT], out[P_COUNT];
         uint32_t eng = jam_r8(&r);
-        for (i = 0; i < np && i < 128u; i++)
-            in[i] = (int16_t)jam_r16(&r);
+        if (r.pk) {
+            if (np > 128u)
+                return 0;
+            jam_rb(&r, in, np * 2u);
+        } else {
+            for (i = 0; i < np && i < 128u; i++)
+                in[i] = (int16_t)jam_r16(&r);
+        }
         for (i = 0; i < P_COUNT; i++)
             def[i] = t->p[i];
         params_by_count(out, in, np > P_COUNT ? P_COUNT : np, def);
@@ -744,6 +814,17 @@ static int jam_apply(uint8_t *in, uint32_t len)
             step_t s;
             uint8_t raw[32];
             memset(&s, 0, sizeof s);
+            if (r.pk) {
+                uint32_t sn = ssz & ~JAM_SPACK;
+                if (!(ssz & JAM_SPACK) || sn < sizeof s - 1u || sn > 16u)
+                    return 0;
+                memset(raw, 0, sizeof raw);
+                jam_rb(&r, raw, sn);
+                memcpy(&s, raw, sn < sizeof s ? sn : sizeof s);
+                if (at < NSTEP && !r.bad)
+                    t->step[at] = s;
+                continue;
+            }
 
             jam_r(&r, ssz <= sizeof raw ? (void *)raw : 0, ssz);
             if (ssz <= sizeof raw && ssz >= sizeof s - 1u)
@@ -770,7 +851,7 @@ static int jam_apply(uint8_t *in, uint32_t len)
         acid_reset(&acid[k]);
     if (!r.bad && r.n + 2u <= r.cap) {
         sz = jam_r16(&r);
-        jam_r(&r, sz == sizeof acid ? (void *)acid : 0, sz);
+        jam_rb(&r, sz == sizeof acid ? (void *)acid : 0, sz);
     }
     memset(lastc, 0, sizeof lastc);
     if (!r.bad && r.n + 2u <= r.cap) {
@@ -812,7 +893,7 @@ static int jam_apply(uint8_t *in, uint32_t len)
     for(k=0;k<NTRK;k++){gen_var[k]=1;gen_live[k]=1;gen_fresh[k]=0;eu_cfg[k][0]=16;eu_cfg[k][1]=4;eu_cfg[k][2]=0;}
     if(!r.bad && r.n+2u<=r.cap){
         gen_store_t gs;memset(&gs,0,sizeof gs);sz=jam_r16(&r);
-        jam_r(&r,sz==sizeof gs?(void *)&gs:0,sz);
+        jam_rb(&r,sz==sizeof gs?(void *)&gs:0,sz);
         if(!r.bad && sz==sizeof gs && gs.version==1u)for(k=0;k<NTRK;k++){
             gen_recipe_t *g=&gs.recipe[k];
             gen_var[k]=(int16_t)clamp(gs.var[k],1,20);gen_live[k]=gs.live[k]!=0;gen_fresh[k]=gs.fresh[k]!=0;
@@ -828,7 +909,7 @@ static int jam_apply(uint8_t *in, uint32_t len)
     memset((void *)smp_sl_last, 0, sizeof smp_sl_last);
     if (!r.bad && r.n + 2u <= r.cap) {
         sz = jam_r16(&r);
-        jam_r(&r, sz == sizeof smp_sl ? (void *)smp_sl : 0, sz);
+        jam_rb(&r, sz == sizeof smp_sl ? (void *)smp_sl : 0, sz);
         for (k = 0; k < NPART; k++) {
             smp_sl_t *s = &smp_sl[k];
             uint32_t ok = s->n <= SMP_SLN;
@@ -840,11 +921,29 @@ static int jam_apply(uint8_t *in, uint32_t len)
     }
 #if TRAP_FM6_TEST
     sz=jam_r16(&r);
-    if(sz!=sizeof tf6_edit || r.n+sz>r.cap) return 0;
-    fm1_irq_off();
-    jam_r(&r,tf6_edit,sizeof tf6_edit);
-    for(k=0;k<NTRK;k++) { tf6_ready[k]=1; tf6[k].valid=0; }
-    fm1_irq_on();
+    if(r.bad || r.n+sz>r.cap) return 0;
+    if(!r.pk && sz==sizeof tf6_edit) {
+        fm1_irq_off();
+        jam_r(&r,tf6_edit,sizeof tf6_edit);
+        for(k=0;k<NTRK;k++) { tf6_ready[k]=1; tf6[k].valid=0; }
+        fm1_irq_on();
+    } else {
+        uint32_t mask, cnt=0;
+        if(sz<1u) return 0;
+        mask=r.p[r.n];
+        for(k=0;k<NTRK;k++) cnt+=(mask>>k)&1u;
+        if((mask>>NTRK) || sz!=1u+cnt*TF6_JAM_TRK) return 0;
+        r.n++;
+        fm1_irq_off();
+        for(k=0;k<NTRK;k++) {
+            tf6[k].valid=0;
+            if(!(mask&(1u<<k))) { tf6_ready[k]=0; continue; }
+            for(i=0;i<155u;i++) tf6_edit[k][i]=(int16_t)r.p[r.n++];
+            for(i=155u;i<158u;i++) { memcpy(&tf6_edit[k][i],r.p+r.n,2); r.n+=2u; }
+            tf6_ready[k]=1;
+        }
+        fm1_irq_on();
+    }
 #endif
     for (k = 0; k < NTRK; k++) {
         acid[k].scale = acid[k].root = 0;

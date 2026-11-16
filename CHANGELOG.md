@@ -1,5 +1,20 @@
 # Changelog
 
+## TRAPSTATION OS 1.1.0.1 (2026-11-16) – the last jam fits again
+
+### Fixed
+- **`LAST JAM FULL`:** in 1.1.0.0 the last jam ran out of room with little more than one bar of steps on every track, and from then
+  on nothing was saved over power-off. The jam is stored packed now: six tracks of 64 steps each, five of them FM6,
+  take a little over half of its room. The FM6 sound is stored for the FM6 tracks only, value for value as before: no
+  sound changes.
+
+### Changed
+- The last jam has a new format (`JAM7`). A jam of 1.1.0.0 is loaded and saved in the new format at the next save.
+  Going back to 1.1.0.0 starts with a fresh jam.
+- Trap Station Desktop reads the new jam from 0.2.1 on; 0.2.0 says it does not know it.
+
+Identity `FM-1_511`. Companion: Trap Station Desktop 0.2.1.
+
 ## TRAPSTATION OS 1.1.0.0 (2026-11-16) – the FM6 engine
 
 ### New

@@ -34,12 +34,12 @@ builds much faster.
 ## Build
 
 ```
-./build.sh --release 1.1.0.0
+./build.sh --release 1.1.0.1
 ```
 
-This makes `build/felucca-1.1.0.0.fwsc` (identity `FM-1_511`) and `build/release-1.1.0.0/` with the package, its
-`SHA256SUMS` and the licence texts. The build is reproducible: the tag `v1.1.0.0` builds the published package byte for
-byte (SHA-256 `e72327a38dad3a21884a23cbbe40f702f964937eb1c72f6eacf4fac04cc1e831`).
+This makes `build/felucca-1.1.0.1.fwsc` (identity `FM-1_511`) and `build/release-1.1.0.1/` with the package, its
+`SHA256SUMS` and the licence texts. The build is reproducible: the tag `v1.1.0.1` builds the published package byte for
+byte (SHA-256 `35d43125dfeeea5e147ae1386f3d13d5538a14c728feeb4eeefb07ca195831c7`).
 
 `./build.sh` without `--release` makes a development build (`build/felucca.fwsc`, identity `FM-1_500`).
 
@@ -59,7 +59,7 @@ Build options are environment variables (`0` or `1`), for example `FELUCCA_CPU2`
 From a local copy of the installer site (Web MIDI needs `https` or `localhost`):
 
 ```
-python3 web/make_site.py build/felucca-1.1.0.0.fwsc 1.1.0.0 build/site
+python3 web/make_site.py build/felucca-1.1.0.1.fwsc 1.1.0.1 build/site
 python3 -m http.server 8009 --bind 127.0.0.1 --directory build/site
 # open http://localhost:8009/ in Chrome or Edge
 ```
@@ -67,7 +67,7 @@ python3 -m http.server 8009 --bind 127.0.0.1 --directory build/site
 Or from the command line (`pip3 install mido python-rtmidi`):
 
 ```
-python3 tools/fm1_install.py build/felucca-1.1.0.0.fwsc
+python3 tools/fm1_install.py build/felucca-1.1.0.1.fwsc
 python3 tools/fm1_install.py --info          # identity of the connected FM-1
 ```
 
