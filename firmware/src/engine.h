@@ -97,6 +97,7 @@ typedef struct {
     int (*done)(struct track *t, voice_t *v);
 
     uint16_t mem;
+    void (*post)(struct track *t, int32_t *out, uint32_t n);
 } engine_t;
 
 #endif

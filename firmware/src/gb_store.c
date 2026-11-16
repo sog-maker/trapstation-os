@@ -254,6 +254,7 @@ static int gbk_used(uint32_t k) { gb_store_init(); return k < GB_KITS && (gb_kit
 static int gbs_save_sound(uint32_t slot)
 {
     uint32_t m = gb_mach_of(TSEL);
+    if(TRAP_FM6_TEST && TSEL->eng_req==ENGI_FM6) { ui_message("FM6: USE PROJECT SAVE"); return 0; }
     gb_store_init();
     xf_save(1);
     gb_snd_take(gb_slot(m, slot), TSEL);
@@ -340,6 +341,7 @@ static int gbk_save(uint32_t k)
     uint32_t i;
     if (k >= GB_KITS)
         return 0;
+    for(i=0;TRAP_FM6_TEST && i<NTRK;i++) if(trk[i].eng_req==ENGI_FM6) { ui_message("FM6: USE PROJECT SAVE"); return 0; }
     gb_store_init();
     kt = gb_kit(k);
     memset(kt, 0, sizeof *kt);
@@ -375,6 +377,7 @@ static int gbk_load(uint32_t k)
     uint32_t i;
     if (k >= GB_KITS)
         return 0;
+    for(i=0;TRAP_FM6_TEST && i<NTRK;i++) if(trk[i].eng_req==ENGI_FM6) { ui_message("FM6: USE PROJECT SAVE"); return 0; }
     gb_store_init();
     kt = gb_kit(k);
     if (!kt->used && !trap_kit_has(k)) {
@@ -513,7 +516,8 @@ static const uint8_t *smp_peaks(uint32_t sl)
     return smp_pk;
 }
 
-#define JAM_MAGIC 0x314D414Au
+#define JAM_MAGIC (TRAP_FM6_TEST ? 0x364D414Au : 0x314D414Au)
+
 #define JAM_PART (ST_PAYLOAD_MAX - 4u)
 #define JAM_CAP (2u * JAM_PART)
 static uint8_t jam_buf[JAM_CAP] __attribute__((section(".pool")));
@@ -636,6 +640,10 @@ static uint32_t jam_make(uint8_t *out)
         jam_w16(&w, sizeof smp_sl);
         jam_w(&w, smp_sl, sizeof smp_sl);
     }
+#if TRAP_FM6_TEST
+    if(w.n+2u+sizeof tf6_edit>w.cap) return 0;
+    jam_w16(&w,sizeof tf6_edit); jam_w(&w,tf6_edit,sizeof tf6_edit);
+#endif
     return w.bad?0:w.n;
 }
 
@@ -830,6 +838,14 @@ static int jam_apply(uint8_t *in, uint32_t len)
                 s->n = 0;
         }
     }
+#if TRAP_FM6_TEST
+    sz=jam_r16(&r);
+    if(sz!=sizeof tf6_edit || r.n+sz>r.cap) return 0;
+    fm1_irq_off();
+    jam_r(&r,tf6_edit,sizeof tf6_edit);
+    for(k=0;k<NTRK;k++) { tf6_ready[k]=1; tf6[k].valid=0; }
+    fm1_irq_on();
+#endif
     for (k = 0; k < NTRK; k++) {
         acid[k].scale = acid[k].root = 0;
         for (i = 0; i < ACID_N; i++) {

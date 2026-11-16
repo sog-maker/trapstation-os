@@ -3,8 +3,8 @@
 #define BANK_EXTRA_COUNT 4u
 static const char *const N_EXTRA[4][8]={
     {"D808","REECE","PLUCK","DBELL","RLEAD","KICK","BELL","HAT"},
-    {"RHODS","MELLO","JBASS","LOKEY","SOFT8","BRUSH","VRIM","CLAVI"},
-    {"DKEYS","WMPAD","LPIAN","DUSTK","TAPSN","VCLK","MUTE","SOFTB"},
+    {"RHODS",(TRAP_FM6_TEST ? "VOICE" : "MELLO"),"JBASS","LOKEY","SOFT8","BRUSH","VRIM",(TRAP_FM6_TEST ? "FLUTE" : "CLAVI")},
+    {"DKEYS","WMPAD","LPIAN","DUSTK","TAPSN","VCLK",(TRAP_FM6_TEST ? "KOTO" : "MUTE"),"SOFTB"},
     {"JNPAD","STRNG","DREAM","DSUB","W808","LCLAP","AIR","GLASS"},
 };
 static const param_desc_t EXTRA_D[4][2]={

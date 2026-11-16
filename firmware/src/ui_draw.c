@@ -373,8 +373,9 @@ static card_span_t card_span;
 #define LG_UY 73
 #define LG_GY 92
 
-#define SPL_MIN_MS 400u
-#define SPL_END_MS 1840u
+#define SPL_MIN_MS (TRAP_UX_TEST ? 120u : 400u)
+#define SPL_END_MS (TRAP_UX_TEST ? 480u : 1840u)
+
 static uint8_t spl_phase;
 static void draw_splash(void)
 {
@@ -382,7 +383,7 @@ static void draw_splash(void)
 }
 static int splash_step(uint32_t t)
 {
-    uint32_t phase=t>=1600u?20u:t/80u;
+    uint32_t phase=TRAP_UX_TEST ? (t>=300u?2u:t>=150u?1u:0u) : (t>=1600u?20u:t/80u);
     if(spl_phase==255u || phase>spl_phase) {
         for(uint32_t y=0;y<240u;y+=GB_STRIP) {
             cv_begin(240,GB_STRIP,0);cv_oy=-(int32_t)y;

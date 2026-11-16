@@ -305,7 +305,7 @@ static uint8_t cla_st;
 
 static int fxt_x(const page_t *pg)
 {
-    return fxl_sel ? (pg->scope == SC_TRACK || pg->scope == SC_ENGINE || pg->scope == SC_CHGEN || pg->scope == SC_BANKA || pg->scope == SC_BANKS || pg->scope == SC_BANKALL || pg->scope == SC_GEN85 || pg->scope == SC_TRAPGEN || pg->scope == SC_HATGEN || (pg->scope == SC_PHONK && !pg->fxt)) && pg->graph != GR_GBSEQ : pg->fxt == 1u;
+    return fxl_sel ? (pg->scope == SC_FM6 || pg->scope == SC_TRACK || pg->scope == SC_ENGINE || pg->scope == SC_CHGEN || pg->scope == SC_BANKA || pg->scope == SC_BANKS || pg->scope == SC_BANKALL || pg->scope == SC_GEN85 || pg->scope == SC_TRAPGEN || pg->scope == SC_HATGEN || (pg->scope == SC_PHONK && !pg->fxt)) && pg->graph != GR_GBSEQ : pg->fxt == 1u;
 }
 static int page_visible(uint32_t i)
 {
@@ -317,6 +317,13 @@ static int page_visible(uint32_t i)
         return (PAGES[i].graph == GR_ACID) == (!fxl_sel && acid_on(&trk[song.sel % NTRK]));
     if (PAGES[i].scope == SC_SLICE)
         return eng_idx(trk[song.sel % NTRK].eng_req) == ENGI_SAMPLER;
+    if(TRAP_FM6_TEST && TSEL->eng_req==ENGI_FM6 && PAGES[i].scope==SC_TRACK &&
+       (PAGES[i].id[0]==P_ATK || PAGES[i].id[0]==P_M2DST || PAGES[i].fam==FAM_FLT)) return 0;
+#if TRAP_UX_TEST
+    if(TRAP_FM6_TEST && TSEL->eng_req==ENGI_FM6 && PAGES[i].scope==SC_TRACK &&
+       (PAGES[i].fam==FAM_ENV || PAGES[i].fam==FAM_LFO || PAGES[i].fam==FAM_FX)) return 0;
+#endif
+    if(PAGES[i].scope==SC_FM6) return TRAP_FM6_TEST && TSEL->eng_req==ENGI_FM6;
     return PAGES[i].scope != SC_ENGINE || page_id_an(&PAGES[i], PAGES[i].id[0]) != 0xFFu;
 }
 static uint32_t acid_pg(const page_t *pg)
@@ -367,7 +374,7 @@ static uint32_t lock_pid(const page_t *pg, uint32_t k)
     uint32_t id = page_id_an(pg, pg_kid(pg, k));
     if (FELUCCA_SIMPLE && alt_mode && alt_ids(pg))
         id = alt_ids(pg)[k & 3u];
-    if (id == 0xFFu)
+    if (pg->scope == SC_FM6 || id == 0xFFu)
         return 0xFFu;
     if ((id & 0x80u) || pg->scope == SC_GLOBAL)
         id = motion_gid(id & 0x7Fu);
@@ -546,7 +553,7 @@ static int16_t *tm_amt(void) { return fxl_sel ? tm_fxa() : &tm_slot(TSEL)[2]; }
 static uint32_t tm_md(const page_t *pg, uint32_t k)
 {
     uint32_t id = page_id_an(pg, pg_kid(pg, k)), j;
-    if (id == 0xFFu || pg->graph == GR_PERF || pg->scope == SC_TRK || pg->scope == SC_STEP || pg->fam == FAM_TRK)
+    if (pg->scope == SC_FM6 || id == 0xFFu || pg->graph == GR_PERF || pg->scope == SC_TRK || pg->scope == SC_STEP || pg->fam == FAM_TRK)
         return 0;
     if ((id & 0x80u) || pg->scope == SC_GLOBAL)
         id = 0x80u | (id & 0x7Fu);
@@ -1016,9 +1023,25 @@ static int pm_global_ok(uint32_t id)
            (id >= G_F1RATE && id < G_COUNT);
 }
 
+#if TRAP_UX_TEST
+static struct { int16_t *vp, before, after; uint32_t at; uint8_t tr; } ux_edit;
+static void ux_edit_take(track_t *t, int16_t *vp, int16_t old) {
+    if(*vp==old) return;
+    if(ux_edit.vp!=vp || ux_edit.tr!=(uint8_t)(t-trk) || ux_edit.after!=old || fm1_ms-ux_edit.at>400u)
+        ux_edit.before=old;
+    ux_edit.vp=vp;ux_edit.after=*vp;ux_edit.at=fm1_ms;ux_edit.tr=(uint8_t)(t-trk);
+}
+#endif
+
 static void pm_record(track_t *t, int16_t *vp, int16_t old)
 {
     perf_mac_t *m;
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+    tf6_ui_commit(vp);
+#endif
+#if TRAP_UX_TEST
+    if(!pm_h.n && !lock_held() && !mom_down()) ux_edit_take(t,vp,old);
+#endif
     uint32_t id, tr = (uint32_t)(t - trk);
     int i, b;
     if (!pm_h.n && !lock_held() && !mom_down())
@@ -1173,6 +1196,9 @@ static struct {
     uint8_t keep;
     uint8_t what;
     uint8_t eng, preset, user, patn;
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+    int16_t fm6[158];
+#endif
     int16_t p[P_COUNT];
     step_t step[NSTEP];
     gen_recipe_t gen;
@@ -1267,13 +1293,16 @@ static void mom_back(const track_t *t)
 static void load_begin(track_t *t, uint32_t what)
 {
     uint32_t i = trk_index(t);
+#if TRAP_UX_TEST
+    ux_edit.vp=0;
+#endif
     if (what & UNDO_SOUND) {
         mom_back(t);
     }
     if (undo_depth++)
         return;
     motion_restore(t);
-    if (undo.keep && undo.trk == i + 1u && !(undo.what & UNDO_MOT) && track_sig(t) == undo.after) {
+    if (!TRAP_UX_TEST && undo.keep && undo.trk == i + 1u && !(undo.what & UNDO_MOT) && track_sig(t) == undo.after) {
         undo.what |= (uint8_t)what;
         load_motion_hold(t, what);
         return;
@@ -1284,6 +1313,9 @@ static void load_begin(track_t *t, uint32_t what)
     undo.preset = t->preset;
     undo.user = t->user;
     memcpy(undo.p, t->p, sizeof undo.p);
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+    memcpy(undo.fm6,tf6_edit[i],sizeof undo.fm6);
+#endif
     memcpy(undo.step, t->step, sizeof undo.step);
     undo.gen=gen_recipe[i];undo.last_n=lastc[i];memcpy(undo.last_note,lastn[i],4);
     undo.pat = pat_sig[i];
@@ -1326,6 +1358,9 @@ static void edit_undo_take(track_t *t, uint32_t tag, uint32_t what)
     undo.preset = t->preset;
     undo.user = t->user;
     memcpy(undo.p, t->p, sizeof undo.p);
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+    memcpy(undo.fm6,tf6_edit[i],sizeof undo.fm6);
+#endif
     memcpy(undo.step, t->step, sizeof undo.step);
     undo.gen=gen_recipe[i];undo.last_n=lastc[i];memcpy(undo.last_note,lastn[i],4);
     undo.pat = pat_sig[i];
@@ -1402,7 +1437,12 @@ static void machine_defaults_p(const track_t *t, int16_t *p)
         p[P_VOICE] = V_MONO;
     }
 }
-static void machine_defaults(track_t *t) { machine_defaults_p(t, t->p); }
+static void machine_defaults(track_t *t) {
+    machine_defaults_p(t, t->p);
+#if TRAP_FM6_TEST
+    if(t->eng_req==ENGI_FM6) tf6_load(trk_index(t),0);
+#endif
+}
 
 static int page_reset(void)
 {
@@ -1419,7 +1459,7 @@ static int page_reset(void)
         const param_desc_t *d = page_desc(pg, k, &vp);
         if (!d || !vp || d->max == d->min || vp == &TSEL->p[P_E7])
             continue;
-        if (pg->scope == SC_TAPE || pg->scope == SC_PHONK || pg->scope == SC_BANKS || pg->scope == SC_GEN85 || pg->scope == SC_TRAPGEN || pg->scope == SC_HATGEN || pg->scope == SC_SLICE)
+        if (pg->scope == SC_FM6 || pg->scope == SC_TAPE || pg->scope == SC_PHONK || pg->scope == SC_BANKS || pg->scope == SC_GEN85 || pg->scope == SC_TRAPGEN || pg->scope == SC_HATGEN || pg->scope == SC_SLICE)
             *vp = d->def;
         else if (vp >= TSEL->p && vp < TSEL->p + P_COUNT)
             *vp = (int16_t)param_fit(d, md[vp - TSEL->p]);
@@ -1453,6 +1493,9 @@ static void apply_preset_to(track_t *t, uint32_t pi)
     t->user = 0;
     if (t == TSEL)
         sync_reload = 1;
+#if TRAP_FM6_TEST
+    if(t->eng_req==ENGI_FM6) tf6_load(trk_index(t),0);
+#endif
     if (!e->npresets) {
         load_end(t);
         return;

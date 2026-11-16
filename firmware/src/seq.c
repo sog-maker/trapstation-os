@@ -1651,7 +1651,7 @@ static void sc_due(uint32_t n)
     int32_t m = sc_pend;
     if (m < 0 || !song.playing)
         return;
-    if (clk_pos == CLK_START || (clk_step == 15u && clk_pos + n >= div_samples(2))) {
+    if (TRAP_UX_TEST || clk_pos == CLK_START || (clk_step == 15u && clk_pos + n >= div_samples(2))) {
         sc_mask_set((uint32_t)m);
         sc_pend = -1;
     }

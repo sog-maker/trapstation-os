@@ -102,7 +102,7 @@ static void ws_clock(const gb_view_t *v)
 {
     char b[24];ws_image(WS_CLOCK,0,34);
     gh_t(23,77,7,str_eq(v->val[2],"INT")?"CLOCK BUS / INTERNAL":str_eq(v->val[2],"USB")?"CLOCK BUS / USB":"CLOCK BUS / TRS",GH_GREY,GH_HEX(0x1b1b1b),GA_S);
-    fmt_int(b,v->bpm);str_cpy(b+str_len(b),".0",sizeof b-str_len(b));
+    fmt_int(b,v->bpm);
     gh_t(25,98,23,b,GH_WHITE,GH_HEX(0x1b1b1b),GA_S);
     ws_dial(WS_CLOCK_DIAL,203,84,v->ratio[0],13);
     for(uint32_t k=0;k<16u;k++) {

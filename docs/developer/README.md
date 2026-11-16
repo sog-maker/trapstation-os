@@ -34,17 +34,22 @@ builds much faster.
 ## Build
 
 ```
-./build.sh --release 1.0.0.0
+./build.sh --release 1.1.0.0
 ```
 
-This makes `build/felucca-1.0.0.0.fwsc` (identity `FM-1_510`) and `build/release-1.0.0.0/` with the package, its
-`SHA256SUMS` and the licence texts. The build is reproducible: the tag `v1.0.0.0` builds the published package byte for
-byte (SHA-256 `b158cdc33e7caaf53608a616f09368fbd3a35d124eb51e737bfb585f605a8882`).
+This makes `build/felucca-1.1.0.0.fwsc` (identity `FM-1_511`) and `build/release-1.1.0.0/` with the package, its
+`SHA256SUMS` and the licence texts. The build is reproducible: the tag `v1.1.0.0` builds the published package byte for
+byte (SHA-256 `e72327a38dad3a21884a23cbbe40f702f964937eb1c72f6eacf4fac04cc1e831`).
 
 `./build.sh` without `--release` makes a development build (`build/felucca.fwsc`, identity `FM-1_500`).
 
-Release numbers have one digit per place (`1.0.0.0`). The identity is `FM-1_5XY` from the first two places
-(`1.0.x.x` → `FM-1_510`); `FM-1_57X` belongs to another firmware, so the scheme stops at 6.9.
+Since 1.1 the build has the FM6 engine and its pages. The two switches behind it are set by `tools/build.py`
+(`TRAP_FM6_TEST=1`, `TRAP_UX_TEST=1`); `TRAP_FM6_TEST=0 TRAP_UX_TEST=0 ./build.sh` builds the 1.0 engines and pages.
+The 22 FM6 factory voices are data: `assets/fm6/trapstation-fm6-bank.json` (name, the 155 voice bytes in the DX7's
+order, then DRIVE, CUTOFF, OUTPUT), turned into a header by `tools/gen_trap_fm6.py`.
+
+Release numbers have one digit per place (`1.1.0.0`). The identity is `FM-1_5XY` from the first two places
+(`1.1.x.x` → `FM-1_511`); `FM-1_57X` belongs to another firmware, so the scheme stops at 6.9.
 
 Build options are environment variables (`0` or `1`), for example `FELUCCA_CPU2` (the second core, default 1) or
 `FELUCCA_CDC` (the USB serial console, default 1); the defaults are in `firmware/src/felucca.c` and `core.h`.
@@ -54,7 +59,7 @@ Build options are environment variables (`0` or `1`), for example `FELUCCA_CPU2`
 From a local copy of the installer site (Web MIDI needs `https` or `localhost`):
 
 ```
-python3 web/make_site.py build/felucca-1.0.0.0.fwsc 1.0.0.0 build/site
+python3 web/make_site.py build/felucca-1.1.0.0.fwsc 1.1.0.0 build/site
 python3 -m http.server 8009 --bind 127.0.0.1 --directory build/site
 # open http://localhost:8009/ in Chrome or Edge
 ```
@@ -62,7 +67,7 @@ python3 -m http.server 8009 --bind 127.0.0.1 --directory build/site
 Or from the command line (`pip3 install mido python-rtmidi`):
 
 ```
-python3 tools/fm1_install.py build/felucca-1.0.0.0.fwsc
+python3 tools/fm1_install.py build/felucca-1.1.0.0.fwsc
 python3 tools/fm1_install.py --info          # identity of the connected FM-1
 ```
 
@@ -81,9 +86,13 @@ Its source is here: `tools/render_scenes.c` with the host layer `web/emu/felucca
 `./build.sh` (for `build/gen`):
 
 ```
-cc -O1 -ffp-contract=off -w -DFELUCCA_FM4=1 -DFELUCCA_SIMPLE=1 -Ibuild/gen -Ifirmware/src -Iweb/emu -Iweb/emu/shim \
-   -o build/render_scenes tools/render_scenes.c -lm
+cc -O1 -ffp-contract=off -fwrapv -w -DFELUCCA_FM4=1 -DFELUCCA_SIMPLE=1 -DTRAP_FM6_TEST=1 -DTRAP_UX_TEST=1 \
+   -Ibuild/gen -Ifirmware/src -Iweb/emu -Iweb/emu/shim -o build/render_scenes tools/render_scenes.c -lm
 ```
+
+The app ships this build as `render_scenes_fm6.exe` (jams of 1.1) next to one without the two `TRAP_` switches, made from
+the 1.0.0.0 tag (jams of 1.0). The same host layer, built with Emscripten, is the app's sound engine
+(`preview/preview.c` in the app's repository).
 
 For Windows, the same with a MinGW-w64 `gcc` gives `render_scenes.exe`.
 

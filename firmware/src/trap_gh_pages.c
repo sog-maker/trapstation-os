@@ -639,6 +639,9 @@ static void gh_disp(int32_t y, int32_t h)
     for (k = 1; k < 4; k++)
         cv_rect(16, y + k * h / 4, 208, 1, GH_G2);
 }
+#if TRAP_FM6_TEST && TRAP_UX_TEST
+#include "trap_fm6_ui.c"
+#endif
 static void gh_env(const gb_view_t *v, const char *head)
 {
     int32_t x0 = 19, x1 = 220, yb = 111, yt = 71, a = x0 + 10 + gh_r(v, 0) * 50 / 1000, d = a + 10 + gh_r(v, 1) * 60 / 1000;
@@ -685,7 +688,7 @@ static void gh_lfo(const gb_view_t *v, const char *head, uint32_t kind)
             gh_ys[i] = (int16_t)(86 - tl_sin((uint32_t)(i * (4 + gh_r(v, 0) * 12 / 1000))) * 18 / 256);
         gh_curve(20, 200, gh_ys, GH_RED, 2);
         gh_t(18, 74, 8, v->val[1], GH_BG, GH_DARK, GA_S);
-    } else if (kind == 1u) {
+    } else if (!TRAP_FM6_TEST && kind == 1u) {
         for (i = 0; i < 16; i++)
             cv_rect(20 + i * 13, 90 - (i % 4 == 0 ? 14 : 8), 5, i % 4 == 0 ? 14 : 8, i % 4 == 0 ? GH_RED : GH_GREY);
         gh_t(18, 74, 8, v->cur[0] ? "SYNC ON / NOTE TRIGGER" : "SYNC OFF / NOTE TRIGGER", GH_BG, GH_DARK, GA_S);
@@ -698,7 +701,7 @@ static void gh_lfo(const gb_view_t *v, const char *head, uint32_t kind)
         gh_curve(20, 200, gh_ys, GH_RED, 2);
         gh_t(18, 74, 8, "RESPONSE PREVIEW", GH_BG, GH_DARK, GA_S);
     }
-    if (kind == 1u) {
+    if (!TRAP_FM6_TEST && kind == 1u) {
         if(gh_mark&&v->play){uint32_t col=v->sig_step%16u;gh_dot(22+(int32_t)col*13,90-(col%4u==0u?14:8),GH_DARK);}
     }
     else gh_marker(v, 20, 200);
@@ -711,7 +714,7 @@ static void gh_synth(const gb_view_t *v, const char *head, uint32_t kind)
     int32_t i;
     gh_module(head);
     gh_disp(63, 76);
-    if (kind == 1u) {
+    if (!TRAP_FM6_TEST && kind == 1u) {
         static const uint8_t ED[8] = {9, 3, 11, 13, 15, 17, 21, 25};
         uint32_t e = ED[(uint32_t)v->cur[0] & 7u];
         if (e & 1u) cv_line_t(59, 90, 59, 109, GH_RED, 1);
@@ -1158,6 +1161,9 @@ static void gh_scene(const gb_view_t *v, uint16_t bgc)
         gh_cards(v);
         return;
     }
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+    if(pg->scope==SC_FM6) {gh_fm6(v);return;}
+#endif
     if (v->stg) {
         gh_stage(v);
         cv_rect(0, 220, 240, 20, GH_DARK);
@@ -1232,6 +1238,24 @@ static void gh_scene(const gb_view_t *v, uint16_t bgc)
         gh_lfo(v, "FILTER / RESPONSE", 2);
     } else if (pg->scope == SC_SLICE) {
         gh_sampler(v);
+    } else if (pg->scope == SC_FM6) {
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+        gh_fm6(v);return;
+#else
+        gh_module(ttl);
+#if TRAP_FM6_TEST
+        gh_disp(63, 76);
+        gh_t(120, 78, 10, "OPERATOR LEVELS", GH_WHITE, GH_DARK, GA_M);
+        for(uint32_t op=0;op<6u;op++) {
+            int32_t x=23+33*(int32_t)op;
+            int32_t level=tf6_edit[song.sel][(5u-op)*21u+FP_OL];
+            char label[3]={(char)('1'+op),0,0};
+            cv_rect(x,90,22,37,GH_LBL);
+            cv_rect(x,127-level*37/99,22,level*37/99,GH_RED);
+            gh_t(x+11,140,10,label,GH_WHITE,GH_DARK,GA_M);
+        }
+#endif
+#endif
     } else if (pg->scope == SC_ENGINE) {
         const machine_t *m = &MACHINES[v->mach % NMACH];
         uint32_t e = m->engine;

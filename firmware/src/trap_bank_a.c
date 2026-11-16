@@ -55,6 +55,17 @@ static void trap_sound_load(track_t *t, const ba_sound_t *s, int melodic808)
     t->p[P_TRANS]=0;
     for (i=0;i<BA_NP && s->p[i].id<P_COUNT;i++)
         t->p[s->p[i].id]=s->p[i].v;
+#if TRAP_FM6_TEST
+    for(i=0;i<TF6_COUNT;i++) if(str_eq(s->name,TF6_ORIGINAL[i])) {
+        t->eng_req=ENGI_FM6;
+        t->p[P_E7]=0;
+        t->p[P_VOICE]=V_POLY;
+        t->p[P_SPRD]=0;
+        t->p[P_DIST]=t->p[P_CHOR]=t->p[P_DLY]=t->p[P_REV]=0;
+        tf6_load(trk_index(t),i);
+        break;
+    }
+#endif
     if (melodic808) {
         if (!t->p[P_SCALE]) t->p[P_SCALE]=2;
         if (!t->p[P_QUANT]) t->p[P_QUANT]=3;

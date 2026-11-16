@@ -76,7 +76,18 @@ def fm6_tables():
          f"#define FM6_AMS_C0 {int(round(12.2 * math.log2(math.e) * 2 ** 24))}   /* log2(e^12.2), Q24 (the AMS curve) */",
          f"#define FM6_AMS_K {int(round(0.07 / 262144 * math.log2(math.e) * 2 ** 24 * 1024))}      /* d/dsensamp of it, Q24 / 1024 */"]
 
-    L += arr("FM6_EXP2", "uint32_t", [int(round((1 << 30) * (2 ** (i / 1024) - 1))) for i in range(1025)], 8)
+    exp2 = [int(round((1 << 30) * (2 ** (i / 1024) - 1))) for i in range(1025)]
+    anchors = exp2[::16]
+    residual = [anchors[i//16] + ((anchors[i//16+1]-anchors[i//16])*(i%16)//16) - exp2[i] for i in range(1024)]
+    assert all(0 <= x <= 65535 for x in residual)
+    assert all(anchors[i//16] + ((anchors[i//16+1]-anchors[i//16])*(i%16)//16) - residual[i] == exp2[i] for i in range(1024))
+    L += ['#if TRAP_FM6_TEST']
+    L += arr("TF6_EXP_ANCHOR", "uint32_t", anchors, 8)
+    L += arr("TF6_EXP_RESIDUAL", "uint16_t", residual, 8)
+    L += ['#else']
+    L += arr("FM6_EXP2", "uint32_t", exp2, 8)
+    L += ['#endif']
+
     lforatio = int(4437500000.0 * CTL / FS)
     L += arr("FM6_LFO_DELTA", "uint32_t", [int(s * lforatio) for s in FM6_LFO_SOURCE], 8)
 

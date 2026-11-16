@@ -13,16 +13,15 @@ und eine Live-Performance-Seite</p>
   <a href="https://sog-maker.github.io/trapstation-os/"><img src="https://img.shields.io/badge/install-im%20Browser-c62d39" alt="Im Browser installieren"></a>
 </p>
 
-<p align="center"><b>Neu in 1.0.0.0:</b> der erste öffentliche Release. Fünf Soundbänke, vier Jackpot-Generatoren, eine
-Piano Roll, eine Live-Performance-Seite, Slices im Sampler, Tape, VHS und Vinyl auf dem Master und ein Installer, der
-sichert, wiederherstellt und den Werkszustand herstellt ·
-<a href="https://github.com/sog-maker/trapstation-os/releases/tag/v1.0.0.0">die Release-Notes</a> · <a href="README.md">English</a></p>
+<p align="center"><b>Neu in 1.1.0.0:</b> eine neue FM-Engine mit sechs Operatoren, 22 überarbeitete Keys, Bells, Orgeln,
+Pads und Leads, zwölf neue Sound-Seiten, Undo und eine überarbeitete Desktop-App · <a href="#neu-in-1100">was neu ist</a> ·
+<a href="https://github.com/sog-maker/trapstation-os/releases/tag/v1.1.0.0">die Release-Notes</a> · <a href="README.md">English</a></p>
 
 <p align="center"><b>Neu bei TRAPSTATION?</b> Lies die <a href="docs/manual/de/Trapstation-Guide-DE.pdf">Anleitung</a>
 (<a href="docs/manual/en/Trapstation-Guide-EN.pdf">English</a>) und leg dir den
 <a href="docs/cheatsheet/Trapstation-Cheat-Sheet.pdf">Spickzettel</a> neben das Gerät.<br>
 <b>Am Computer:</b> <a href="https://github.com/sog-maker/trapstation-desktop">Trap Station Desktop</a> macht aus Audiodateien
-Samples, spiegelt den Bildschirm und exportiert deine Jam nach Ableton Live.</p>
+Samples, bearbeitet die FM6-Sounds, spiegelt den Bildschirm und exportiert deine Jam nach Ableton Live.</p>
 
 ![TRAPSTATION auf dem Bildschirm des FM-1: Startmenü, Sequencer, Piano Roll, LUCKY DRUMS, PERFORMANCE und die Kassette](docs/img/screens.png)
 
@@ -37,6 +36,31 @@ TRAPSTATION OS ist freie Software, ein Fork von [BBL JAM BOX](https://github.com
 auf [Felucca](https://github.com/hugelton/Felucca) von Hügelton Instruments aufbaut. Es ist weder BBL JAM BOX noch
 Felucca: Fehler bitte [hier](https://github.com/sog-maker/trapstation-os/issues) melden.
 
+## Neu in 1.1.0.0
+
+- **Eine neue Engine.** FM SYN ist jetzt **FM6**: sechs Operatoren, 32 Algorithmen, für jeden Operator eine Hüllkurve
+  aus vier Raten und vier Pegeln, ein LFO und eine Pitch-Hüllkurve, dazu DRIVE, CUTOFF und OUTPUT, um jede Spur zu
+  färben. Sie ersetzt den Synth mit vier Operatoren. Die Spuren teilen sich sechzehn FM-Stimmen, bis zu sechs auf einer.
+- **Überarbeitete Presets.** Die 22 Keys, Bells, Orgeln, Pads und Leads der Bänke A–E sind auf der neuen Engine neu
+  gebaut: dunkler, voller, mit klarerem Anschlag und Ausklang. Drei haben neue Namen: GHOST VOICES, DARK FLUTE und
+  DUSTY KOTO. 808s, Drums, MONO-Sounds und der Sampler klingen genau wie vorher.
+- **Zwölf Sound-Seiten** für FM SYN im Workstation-Design: ROUTING, OP TONE und OP LEVEL auf **FX**; OP RATES,
+  OP LEVELS und KEY SCALE auf **SCL**; LFO MOTION, LFO DEPTH und PITCH ENV auf **ENV**; COLOR, DELAY und REVERB auf
+  **LFO**. **OCT+** halten und **K1** drehen wählt den Operator. Eine gehaltene Note folgt jedem Regler sofort.
+- **Undo.** **OCT-** zweimal tippen: Die letzte Reglerbewegung oder der zuletzt geladene Sound oder Pattern wird
+  zurückgenommen.
+- **Schneller.** Der Start dauert eine halbe Sekunde, und eine Szene wechselt in dem Moment, in dem du sie lädst.
+- **Eine überarbeitete Desktop-App.** [Trap Station Desktop 0.2.0](https://github.com/sog-maker/trapstation-desktop) dreht
+  sich um einen Sound-Editor für die neue Engine: Er spielt über die Sound-Engine der Firmware selbst, die Tasten des
+  FM-1 spielen den Sound, den du gerade bearbeitest, und DX7-Stimmen lassen sich importieren und exportieren.
+
+![Die zwölf FM6-Seiten: ROUTING, OP TONE, OP LEVEL, OP RATES, OP LEVELS, KEY SCALE, LFO MOTION, LFO DEPTH, PITCH ENV, COLOR, DELAY und REVERB](docs/img/fm6-pages.png)
+
+**Vor dem Update von 1.0.0.0:** erst im Installer sichern. Samples, eigene Sounds und Kits bleiben auf dem FM-1. Die
+letzte Jam von 1.0.0.0 lädt 1.1.0.0 nicht (die Jam enthält jetzt die FM6-Sounds), der FM-1 startet also mit einer
+frischen. Ein FM6-Sound wird mit der Jam gespeichert: Solange eine Spur einen spielt, speichern und laden die eigenen
+Sound-Plätze und die Kits nicht (auf dem Bildschirm steht `FM6: USE PROJECT SAVE`).
+
 ## Installieren
 
 Eigene Firmware, auf eigenes Risiko; der Weg zurück zur offiziellen Firmware steht unten.
@@ -48,12 +72,12 @@ Seite speichert Sounds, Kits, die letzte Jam und die Samples in eine Datei und s
 **Über The Firmware Hub:** TRAPSTATION ist bei [thefirmwarehub.com](https://thefirmwarehub.com/) eingereicht; der Hub
 installiert Firmwares mit einem Klick und wechselt zwischen ihnen.
 
-**Mit Python 3:** `trapstation-os-1.0.0.0.fwsc` aus dem [aktuellen Release](https://github.com/sog-maker/trapstation-os/releases/latest)
+**Mit Python 3:** `trapstation-os-1.1.0.0.fwsc` aus dem [aktuellen Release](https://github.com/sog-maker/trapstation-os/releases/latest)
 laden und mit dem Ordner `tools/` dieses Repos:
 
 ```
 pip install mido python-rtmidi
-python tools/fm1_install.py trapstation-os-1.0.0.0.fwsc
+python tools/fm1_install.py trapstation-os-1.1.0.0.fwsc
 ```
 
 **Verbinden:** ein USB-**Daten**kabel, direkt am Computer (kein Hub, Dock oder Monitor-Anschluss), andere Musikprogramme
@@ -76,7 +100,7 @@ Schritt für Schritt, und was tun, wenn etwas schiefgeht: [INSTALL.de.md](INSTAL
 | | |
 | --- | --- |
 | **Spuren** | 6, jede mit eigener Maschine, eigenem Sound, eigenen Steps und Mix, dazu eine FX-Spur für die Master-Effekte |
-| **Maschinen** | 808-Kit-Maschinen (Kick, Snare, Clap, Hat, Cowbell, Perc) mit Glide, Sub und Accent; 8BAS 808-Bass; FM SYN (4 Operatoren); MONO; DIGITAL; SAMPLER |
+| **Maschinen** | 808-Kit-Maschinen (Kick, Snare, Clap, Hat, Cowbell, Perc) mit Glide, Sub und Accent; 8BAS 808-Bass; FM SYN (FM6: 6 Operatoren, 32 Algorithmen); MONO; DIGITAL; SAMPLER |
 | **Sounds** | fünf Werksbänke: A Memphis, B Drift Phonk, C Jazz Phonk, D Chill / Lo-Fi, E Wave; zwei Werks-Kits, MEMPHIS 808 und DR660 KIT; 16 eigene Sounds je Maschine, 11 eigene Kits |
 | **Sequencer** | 64 Steps je Spur (4 Bars), Akkorde, Ties, Accents, Rolls, Parameter-Locks, Trig-Bedingungen; K2 PLAY wiederholt eine Bar live, K3 COPY TO kopiert eine Bar auf eine andere, für alle Spuren |
 | **Generatoren** | LUCKY DRUMS, ACE HATS, LOW ROLLER, GOLDEN CHORDS: ein GAMBLE-Regler, MAKE und UNDO; CHORD GEN, CHORD VAR, QUICK FILL und EUCLID |
@@ -220,8 +244,9 @@ Die vollständige Liste, Seite für Seite: die [Anleitung](docs/manual/de/USER_G
 
 - **Converter:** WAV, MP3, FLAC, OGG, M4A, AIFF und mehr in Samples für den FM-1.
 - **Sampler S01–S32:** fügt Samples hinzu, ohne die vorhandenen zu löschen.
-- **Bänke A–E:** die Werks-Presets mit allen Werten.
-- **Geräteansicht:** der Bildschirm des FM-1 live am Computer.
+- **Sound-Editor:** die Werks-Presets der Bänke A–E und eigene Sounds, mit den zwölf FM6-Seiten, beim Bearbeiten
+  hörbar über die Sound-Engine der Firmware selbst; DX7-Stimmen und -Bänke (`.syx`) rein und raus.
+- **Geräteansicht:** der FM-1, gezeichnet um seinen Live-Bildschirm; seine Tasten spielen den Sound im Editor.
 - **Arrangement und Ableton-Export:** die vier Szenen als Clips, Piano Roll und Drum-Editor, dazu ein Ableton-Live-Projekt
   (`.als`) oder MIDI-Dateien deiner Jam.
 
@@ -234,6 +259,7 @@ Die vollständige Liste, Seite für Seite: die [Anleitung](docs/manual/de/USER_G
 | Anleitung (Web) | [USER_GUIDE.md](docs/manual/de/USER_GUIDE.md) | [USER_GUIDE.md](docs/manual/en/USER_GUIDE.md) |
 | Schnellstart | [QUICKSTART.md](docs/manual/de/QUICKSTART.md) | [QUICKSTART.md](docs/manual/en/QUICKSTART.md) |
 | Performance-Seite | [PERFORMANCE.md](docs/manual/de/PERFORMANCE.md) | [PERFORMANCE.md](docs/manual/en/PERFORMANCE.md) |
+| Die FM6-Sound-Seiten (neu in 1.1) | [FM6.md](docs/manual/de/FM6.md) | [FM6.md](docs/manual/en/FM6.md) |
 | Spickzettel | [Trapstation-Cheat-Sheet.pdf](docs/cheatsheet/Trapstation-Cheat-Sheet.pdf) | |
 | Designreferenz | [docs/design](docs/design/) | |
 | Änderungen | [CHANGELOG.md](CHANGELOG.md) | |
@@ -245,10 +271,10 @@ Unter Linux x86-64 oder Ubuntu in WSL, mit der JieLi-Toolchain und dem AC79-SDK:
 ```
 tools/get_toolchain.sh
 git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git ~/fw-AC79_AIoT_SDK
-./build.sh --release 1.0.0.0
+./build.sh --release 1.1.0.0
 ```
 
-Der Tag `v1.0.0.0` baut das veröffentlichte Paket bytegleich. Alles Weitere, auch der lokale und der Online-Installer:
+Der Tag `v1.1.0.0` baut das veröffentlichte Paket bytegleich. Alles Weitere, auch der lokale und der Online-Installer:
 [docs/developer](docs/developer/).
 
 ## Wenn der FM-1 nicht startet
@@ -275,7 +301,10 @@ erwartet hast und was passiert ist, und was der Bildschirm oder der Installer ze
   [Felucca-Engines](https://github.com/hugelton/Felucca-Engines) ([MIT](LICENSES/MIT-Felucca-Engines.txt)) und die
   Icon-Schrift [Fukiai](https://github.com/hugelton/Fukiai) ([MIT](LICENSES/MIT-Fukiai.txt))
 - **[Skiff](https://github.com/illuminus5/skiff)** von [illuminus5](https://github.com/illuminus5): Chord Follow
-  (Grundton-Erkennung) und eine Inspiration für Browser-Editor, Presets und Spur-Aufbau
+  (Grundton-Erkennung), der FM6-Kern in Ganzzahl-Rechnung, auf dem FM SYN dieser Firmware läuft, und eine Inspiration
+  für Browser-Editor, Presets und Spur-Aufbau
+- **msfa**, der Synthese-Kern von [Dexed](https://github.com/asb2m10/dexed) (Google Inc., Pascal Gauthier): die
+  FM6-Engine, im Ganzzahl-C-Port von Leo Kuroshita ([Apache-2.0](LICENSES/Apache-2.0-msfa.txt))
 - **[FM1-X0X](https://github.com/charlesvestal/fm1-x0x)** von [charlesvestal](https://github.com/charlesvestal): eine
   Inspiration für den 808-Fokus und den Accent, dazu Start, Mailbox und Schutz des zweiten Kerns
 - Zweiter Kern: nach [Melodee](https://github.com/keremimo/melodee) von [keremimo](https://github.com/keremimo) und

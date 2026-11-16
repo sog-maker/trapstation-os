@@ -532,7 +532,7 @@ enum { FAM_HOME, FAM_ENV, FAM_LFO, FAM_FX, FAM_SCL, FAM_EDIT, FAM_GLO, FAM_SAVE,
 
        FAM_COUNT };
 enum { SC_TRACK, SC_GLOBAL, SC_ENGINE, SC_STEP, SC_TRK, SC_SFN, SC_CHGEN, SC_BANKA, SC_TAPE, SC_PHONK, SC_BANKS, SC_GEN85,
-       SC_TRAPGEN, SC_OVIEW, SC_HATGEN, SC_BANKALL, SC_SLICE };
+       SC_TRAPGEN, SC_OVIEW, SC_HATGEN, SC_BANKALL, SC_SLICE, SC_FM6 };
 #define MIX_PAN 0x10u
 enum { GR_NONE, GR_ADSR, GR_LFO, GR_STEPS, GR_ARP, GR_SCALE, GR_FX, GR_ROLL, GR_BROWSE, GR_SLOTS, GR_USER, GR_TRK,
        GR_SLCR, GR_MOD, GR_PATS, GR_SONG, GR_TOOLS, GR_CHORD, GR_SLICES, GR_EVENTS,
@@ -662,6 +662,16 @@ static const char *const N_SQBAR[] = {"ALL", "1", "2", "3", "4"};
 static const char *const N_BDUP[] = {"-", "1", "2", "3", "4"};
 static const param_desc_t SB_D = PE("PLAY", N_SQBAR, 0), BD_D = PE("COPY TO", N_BDUP, 0);
 static int16_t seq_bar, bar_dup;
+#if TRAP_FM6_TEST && TRAP_UX_TEST
+static uint8_t tf6_ui_op, tf6_ui_pitch;
+static int16_t tf6_curves[NTRK][6];
+static void tf6_ui_commit(int16_t *vp) {
+    for(uint32_t t=0;t<NTRK;t++) for(uint32_t o=0;o<6;o++)
+        if(vp==&tf6_curves[t][o]) {
+            tf6_edit[t][o*21+11]=*vp/4;tf6_edit[t][o*21+12]=*vp%4;return;
+        }
+}
+#endif
 static const page_t PAGES[] = {
     {"ENV", FAM_ENV, SC_TRACK, GR_ADSR, {P_ATK, P_DEC, P_SUS, P_REL}},
     {"VOL PAN", FAM_ENV, SC_TRACK, GR_NONE, {P_LEVEL, P_PAN, 0xFF, 0xFF}},
@@ -679,6 +689,61 @@ static const page_t PAGES[] = {
     {"LFO 3", FAM_LFO, SC_GLOBAL, GR_NONE, {G_F3RATE, G_F3WAVE, G_F3DEST, G_F3AMT}, 1},
 
     {"BANKS", FAM_EDIT, SC_BANKALL, GR_NONE, {0, 1, 2, 0xFF}},
+#if TRAP_FM6_TEST
+#if TRAP_UX_TEST
+    {"COLOR", FAM_LFO, SC_FM6, GR_NONE, {155,156,157,200}},
+    {"DELAY", FAM_LFO, SC_FM6, GR_NONE, {201,202,203,204}},
+    {"REVERB", FAM_LFO, SC_FM6, GR_NONE, {205,206,207,208}},
+    {"ROUTING", FAM_EDIT, SC_FM6, GR_NONE, {134,135,144,136}},
+    {"OP TONE", FAM_EDIT, SC_FM6, GR_NONE, {18,19,17,20}},
+    {"OP LEVEL", FAM_EDIT, SC_FM6, GR_NONE, {16,15,14,13}},
+    {"OP RATES", FAM_FLT, SC_FM6, GR_NONE, {0,1,2,3}},
+    {"OP LEVELS", FAM_FLT, SC_FM6, GR_NONE, {4,5,6,7}},
+    {"KEY SCALE", FAM_FLT, SC_FM6, GR_NONE, {8,9,10,159}},
+    {"LFO MOTION", FAM_ENV, SC_FM6, GR_NONE, {137,142,138,141}},
+    {"LFO DEPTH", FAM_ENV, SC_FM6, GR_NONE, {139,140,143,255}},
+    {"PITCH ENV", FAM_ENV, SC_FM6, GR_NONE, {126,127,128,129}},
+#else
+    {"FM6 ALG", FAM_EDIT, SC_FM6, GR_NONE, {134,135,136,144}},
+    {"OP1 TONE", FAM_EDIT, SC_FM6, GR_NONE, {121,123,124,125}},
+    {"OP1 RATE", FAM_ENV, SC_FM6, GR_NONE, {105,106,107,108}},
+    {"OP1 LEVEL", FAM_ENV, SC_FM6, GR_NONE, {109,110,111,112}},
+    {"OP1 SCALE", FAM_EDIT, SC_FM6, GR_NONE, {113,114,115,118}},
+    {"OP1 SENS", FAM_EDIT, SC_FM6, GR_NONE, {116,117,119,120}},
+    {"OP2 TONE", FAM_EDIT, SC_FM6, GR_NONE, {100,102,103,104}},
+    {"OP2 RATE", FAM_ENV, SC_FM6, GR_NONE, {84,85,86,87}},
+    {"OP2 LEVEL", FAM_ENV, SC_FM6, GR_NONE, {88,89,90,91}},
+    {"OP2 SCALE", FAM_EDIT, SC_FM6, GR_NONE, {92,93,94,97}},
+    {"OP2 SENS", FAM_EDIT, SC_FM6, GR_NONE, {95,96,98,99}},
+    {"OP3 TONE", FAM_EDIT, SC_FM6, GR_NONE, {79,81,82,83}},
+    {"OP3 RATE", FAM_ENV, SC_FM6, GR_NONE, {63,64,65,66}},
+    {"OP3 LEVEL", FAM_ENV, SC_FM6, GR_NONE, {67,68,69,70}},
+    {"OP3 SCALE", FAM_EDIT, SC_FM6, GR_NONE, {71,72,73,76}},
+    {"OP3 SENS", FAM_EDIT, SC_FM6, GR_NONE, {74,75,77,78}},
+    {"OP4 TONE", FAM_EDIT, SC_FM6, GR_NONE, {58,60,61,62}},
+    {"OP4 RATE", FAM_ENV, SC_FM6, GR_NONE, {42,43,44,45}},
+    {"OP4 LEVEL", FAM_ENV, SC_FM6, GR_NONE, {46,47,48,49}},
+    {"OP4 SCALE", FAM_EDIT, SC_FM6, GR_NONE, {50,51,52,55}},
+    {"OP4 SENS", FAM_EDIT, SC_FM6, GR_NONE, {53,54,56,57}},
+    {"OP5 TONE", FAM_EDIT, SC_FM6, GR_NONE, {37,39,40,41}},
+    {"OP5 RATE", FAM_ENV, SC_FM6, GR_NONE, {21,22,23,24}},
+    {"OP5 LEVEL", FAM_ENV, SC_FM6, GR_NONE, {25,26,27,28}},
+    {"OP5 SCALE", FAM_EDIT, SC_FM6, GR_NONE, {29,30,31,34}},
+    {"OP5 SENS", FAM_EDIT, SC_FM6, GR_NONE, {32,33,35,36}},
+    {"OP6 TONE", FAM_EDIT, SC_FM6, GR_NONE, {16,18,19,20}},
+    {"OP6 RATE", FAM_ENV, SC_FM6, GR_NONE, {0,1,2,3}},
+    {"OP6 LEVEL", FAM_ENV, SC_FM6, GR_NONE, {4,5,6,7}},
+    {"OP6 SCALE", FAM_EDIT, SC_FM6, GR_NONE, {8,9,10,13}},
+    {"OP6 SENS", FAM_EDIT, SC_FM6, GR_NONE, {11,12,14,15}},
+    {"FM6 MODE", FAM_EDIT, SC_FM6, GR_NONE, {17,38,59,80}},
+    {"FM6 MODE 2", FAM_EDIT, SC_FM6, GR_NONE, {101,122,255,255}},
+    {"FM6 LFO", FAM_LFO, SC_FM6, GR_NONE, {137,138,139,140}},
+    {"FM6 LFO 2", FAM_LFO, SC_FM6, GR_NONE, {141,142,143,255}},
+    {"PITCH RATE", FAM_ENV, SC_FM6, GR_NONE, {126,127,128,129}},
+    {"PITCH LEVEL", FAM_ENV, SC_FM6, GR_NONE, {130,131,132,133}},
+    {"FM6 COLOR", FAM_FLT, SC_FM6, GR_NONE, {155,156,157,255}},
+#endif
+#endif
     {"OSC 1", FAM_EDIT, SC_ENGINE, GR_NONE, {P_E0, P_E1, P_E2, P_E3}},
     {"SLICE", FAM_EDIT, SC_SLICE, GR_NONE, {SL_SET, SL_STYLE, SL_MAKE, SL_MAN}},
     {"OSC 2", FAM_EDIT, SC_ENGINE, GR_NONE, {P_E4, P_E5, P_E6, P_LN0}},
@@ -742,6 +807,9 @@ static const uint8_t *alt_ids(const page_t *pg)
 
 static uint32_t page_id_an(const page_t *pg, uint32_t id)
 {
+#if TRAP_FM6_TEST
+    if(pg->scope==SC_ENGINE && TSEL->eng_req==ENGI_FM6) return 0xFFu;
+#endif
     if (pg->scope == SC_ENGINE && str_eq(pg->title, "COLOR")) {
         uint32_t e = eng_idx(TSEL->eng_req);
         if (an_is_kick(TSEL))
@@ -781,6 +849,36 @@ static uint32_t page_id_an(const page_t *pg, uint32_t id)
 static const param_desc_t *page_desc(const page_t *pg, uint32_t slot, int16_t **valp)
 {
     uint32_t id;
+#if TRAP_FM6_TEST
+    if(pg->scope==SC_FM6) {
+        static param_desc_t d[4];
+        static const char *const opnames[21]={"RATE 1","RATE 2","RATE 3","RATE 4","LEVEL 1","LEVEL 2","LEVEL 3","LEVEL 4","B POINT","L DEPTH","R DEPTH","L CURVE","R CURVE","RATE SC","AM SENS","VEL SEN","LEVEL","FIXED","COARSE","FINE","DETUNE"};
+        static const char *const common[19]={"P RATE 1","P RATE 2","P RATE 3","P RATE 4","P LEVEL 1","P LEVEL 2","P LEVEL 3","P LEVEL 4","ALGO","FEEDBACK","OSC SYN","SPEED","DELAY","PITCH MOD","AMP MOD","LFO SYNC","WAVE","PIT SEN","TRANS"};
+        id=pg->id[slot&3u]; *valp=0;
+#if TRAP_UX_TEST
+        if(id>=200u && id<=208u) {
+            static const uint8_t ids[]={P_CHOR,G_DTIME,G_DFDBK,G_DCOLOR,P_DLY,G_RSIZE,G_RDAMP,G_RTYPE,P_REV};
+            uint32_t q=id-200u,j=ids[q];
+            if(q==0u||q==4u||q==8u) {*valp=&TSEL->p[j];return &TP[j];}
+            *valp=&song.g[j];return &GP[j];
+        }
+        if(id==159u) {
+            uint32_t o=5u-tf6_ui_op;
+            *valp=&tf6_curves[song.sel][o];
+            **valp=tf6_edit[song.sel][o*21+11]*4+tf6_edit[song.sel][o*21+12];
+            d[slot]=(param_desc_t){"CURVES",F_INT,0,15,0,0,0};return &d[slot];
+        }
+        if(id<21u) id+=(5u-tf6_ui_op)*21u;
+        if(id>=126u && id<130u && tf6_ui_pitch) id+=4u;
+#endif
+        if(id>=158u) return 0;
+        if(!tf6_ready[song.sel]) tf6_load(song.sel,0);
+        d[slot]=(param_desc_t){id<126u?opnames[id%21u]:id<145u?common[id-126u]:id==155u?"DRIVE":id==156u?"CUTOFF":"OUTPUT",F_INT,0,id<145u?(int16_t)fm6_max(id):id==156u?20000:100,0,0,0};
+        if(id==156u) d[slot].min=40;
+        *valp=&tf6_edit[song.sel][id];
+        return &d[slot];
+    }
+#endif
     if (pg->scope == SC_PHONK) {
         id=pg->id[slot&3u];
         *valp=id<PH_COUNT?ph_value(id):0;

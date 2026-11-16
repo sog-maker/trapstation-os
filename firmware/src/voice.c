@@ -714,7 +714,7 @@ static uint32_t track_render(track_t *t, int32_t *out, uint32_t n)
         if (!v->active)
             continue;
         {
-            env = env_tick(t, v);
+            env = e->ownenv && v->stage != 4u ? 32767 : env_tick(t, v);
             if (e->ownenv && v->active && v->stage != 4u) {
 
                 if (e->done(t, v)) {
@@ -768,5 +768,6 @@ static uint32_t track_render(track_t *t, int32_t *out, uint32_t n)
             t->p[P_E0 + i] = pe_new[i];
         t->xf--;
     }
+    if (e->post) e->post(t, out, n);
     return nr;
 }

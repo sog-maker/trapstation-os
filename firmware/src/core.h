@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#ifndef TRAP_UX_TEST
+#define TRAP_UX_TEST 0
+#endif
+
 #define NVOICE 8
 #define NPART 6
 #define NTRK NPART
@@ -25,7 +29,12 @@
 #define C1_NP (FELUCCA_CPU2 ? NPART : 1)
 
 #define C1_PI(t) ((uint32_t)((t) - trk) % C1_NP)
-#define NENGINES 5u
+#ifndef TRAP_FM6_TEST
+#define TRAP_FM6_TEST 0
+#endif
+#define ENGI_FM6 5u
+#define ENGI_SYNTH (TRAP_FM6_TEST ? ENGI_FM6 : ENGI_DIGITAL)
+#define NENGINES (5u + TRAP_FM6_TEST)
 #define ENGI_DIGITAL 1u
 #define ENGI_ANALOG 2u
 #define ENGI_SAMPLER 3u

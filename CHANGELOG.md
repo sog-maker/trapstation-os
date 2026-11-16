@@ -1,5 +1,28 @@
 # Changelog
 
+## TRAPSTATION OS 1.1.0.0 (2026-11-16) – the FM6 engine
+
+### New
+- **FM6:** FM SYN is a six-operator FM engine now (32 algorithms, an envelope of four rates and four levels per
+  operator, LFO, pitch envelope), with DRIVE, CUTOFF and OUTPUT per track. Sixteen FM voices across the device, up to
+  six on a track. A held note follows the knobs.
+- **Presets:** the 22 keys, bells, organs, pads and leads of banks A–E rebuilt on FM6. New names: GHOST VOICES (was
+  MELLOW EP), DARK FLUTE (was JAZZ CLAVI), DUSTY KOTO (was MUTED LOFI PLUCK). RACE LEAD and DREAM LEAD are FM6 sounds too.
+- **Twelve FM6 pages** in the Workstation design: ROUTING, OP TONE, OP LEVEL (FX); OP RATES, OP LEVELS, KEY SCALE (SCL);
+  LFO MOTION, LFO DEPTH, PITCH ENV (ENV); COLOR, DELAY, REVERB (LFO). OCT+ + K1 chooses the operator on every page;
+  on PITCH ENV, OCT+ + K2 switches between the rates and the levels.
+- **Undo:** OCT- tapped twice takes back the last knob move, or the last sound or pattern load.
+
+### Changed
+- The start takes about half a second. The tempo shows whole BPM.
+- A loaded scene changes at once, no longer on the next bar.
+- The four-operator FM SYN is gone; the FM drum machines, the 808 machines, MONO and the sampler are unchanged and
+  sound the same.
+- The last jam has a new format that carries the FM6 sounds: a jam of 1.0.0.0 is not loaded. An FM6 sound is kept with
+  the jam; while a track plays one, user sound slots and kits do not save or load (`FM6: USE PROJECT SAVE`).
+
+Identity `FM-1_511`. Companion: Trap Station Desktop 0.2.0.
+
 ## TRAPSTATION OS 1.0.0.0 (2026-11-15) – first public release
 
 ### New

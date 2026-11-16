@@ -194,7 +194,7 @@ static __attribute__((noinline)) void digital_render_legacy(track_t *t, voice_t 
     ph4 = (uint32_t)v->s[7];
     fb1 = v->s[5];
     fb2 = v->s[6];
-    if (mach) {
+    if (TRAP_FM6_TEST || mach) {
         int32_t en = v->s[4], sw = (int32_t)ph4, a1 = p[P_E1], a2 = p[P_E2], a3 = p[P_E3], e4 = p[P_E4];
         int32_t a4s = e4;
         uint32_t bi = fm_ratio_inc(m->inc, tune_q8(p[P_E0]));
@@ -236,7 +236,7 @@ static __attribute__((noinline)) void digital_render_legacy(track_t *t, voice_t 
     }
     for (i = 0; i < n; i++) {
         int32_t o1, o2, o3, o4, s;
-        if (mach) {
+        if (TRAP_FM6_TEST || mach) {
             int32_t nz = ((int32_t)(noise32(&fb2) >> 17) - 16384) * 2;
             if (mach == 1) {
                 o1 = sine_i(ph0 + digital_mod(sine_i(ph1), mD));
@@ -611,7 +611,8 @@ static __attribute__((noinline)) void syn_render(track_t *t, voice_t *v, int32_t
 
 static void digital_render(track_t *t, voice_t *v, int32_t *out, uint32_t n, const vmod_t *m)
 {
-    if (FELUCCA_SIMPLE && t->p[P_E7] % 6 == 0) syn_render(t, v, out, n, m);
+    if (TRAP_FM6_TEST && t->p[P_E7] % 6 == 0) return;
+    if (!TRAP_FM6_TEST && FELUCCA_SIMPLE && t->p[P_E7] % 6 == 0) syn_render(t, v, out, n, m);
     else if (digital_custom(t)) digital_render_custom(t, v, out, n, m);
     else digital_render_legacy(t, v, out, n, m);
 }
@@ -629,7 +630,7 @@ static const param_desc_t MACH_D[5][7] = {
 static const param_desc_t *digital_desc(const track_t *t, uint32_t k)
 {
     uint32_t mach = (uint32_t)t->p[P_E7] % 6u;
-    return k >= 7u ? 0 : mach ? &MACH_D[mach - 1u][k] : FELUCCA_SIMPLE ? &SYN_D[k] : 0;
+    return k >= 7u ? 0 : mach ? &MACH_D[mach - 1u][k] : !TRAP_FM6_TEST && FELUCCA_SIMPLE ? &SYN_D[k] : 0;
 }
 
 static const engine_t ENG_DIGITAL = {

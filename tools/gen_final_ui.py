@@ -5,7 +5,7 @@ and sprites are derived from the pinned approved native PNGs, never redrawn.
 """
 from pathlib import Path
 from PIL import Image, ImageDraw
-import sys,json,hashlib
+import sys,json,hashlib,os
 ROOT=Path(__file__).resolve().parents[1]
 SRC=ROOT/'assets/ui/final-0996'
 REF=SRC/'png'
@@ -16,11 +16,12 @@ def add(name,im,previous=None):
 def pic(name):return Image.open(REF/(name+'.png')).convert('RGB')
 def clear(im,box,color):ImageDraw.Draw(im).rectangle((box[0],box[1],box[2]-1,box[3]-1),fill=color)
 prev=None
-for f in range(21):
+boot_frames=[0,10,20] if os.environ.get("TRAP_UX_TEST")=="1" else range(21)
+for index,f in enumerate(boot_frames):
 
     im=Image.open(SRC/'boot'/('%02d.png'%f)).convert('RGB')
     assert im.size==(240,240)
-    add('BOOT_%02d'%f,im,prev);prev=im.copy()
+    add('BOOT_%02d'%index,im,prev);prev=im.copy()
 for name in ['W29','W30','W31']:add('START_'+name,pic(name))
 
 im=pic('W06')

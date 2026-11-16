@@ -164,7 +164,7 @@ static void cla_poll(uint32_t pressed)
     if ((pressed >> dn) & 1u)
         t0 = fm1_ms | 1u;
     if (!((fm1_in.buttons >> dn) & 1u)) {
-        if (cla_st == 1u) {
+        if (cla_st == 1u && !TRAP_UX_TEST) {
             if (t1 && t1_on == on && (int32_t)(fm1_ms - t1) < (int32_t)CLR2_MS) {
                 cla_clear(0);
                 t1 = 0;
@@ -2409,6 +2409,10 @@ static void edit_param(uint32_t slot, int32_t steps)
         g_capture(vp);
 }
 
+#if TRAP_UX_TEST
+#include "trap_ux_undo.c"
+#endif
+
 static uint32_t oct_taps(uint32_t pressed, int here)
 {
     static uint8_t down, chord;
@@ -2684,6 +2688,9 @@ static void ui_input(void)
         bm_input(pressed);
         return;
     }
+#if TRAP_UX_TEST
+    pressed = ux_undo_button(pressed);
+#endif
     pressed = tm_poll(pressed);
     fill_poll();
     if (FELUCCA_SIMPLE)
@@ -2987,10 +2994,10 @@ static void ui_input(void)
         } else if (dn && ((fm1_in.buttons >> panel.btn[B_OCTDN]) & 1u)) {
             ou_used = 1;
         }
-        if (!dn && ou_dn && !ou_used && fm1_ms - ou_t0 < HINT_MS &&
+        if (!dn && ou_dn && !ou_used && !ou_eat && fm1_ms - ou_t0 < HINT_MS &&
             !ui.confirm && !sgrid_on() && !par_on() && !acid_kon())
             song.octave += song.octave < 3 ? 1 : 0;
-        else if (FELUCCA_SIMPLE && !dn && ou_dn && !ou_used && fm1_ms - ou_t0 < HINT_MS && !ui.confirm &&
+        else if (FELUCCA_SIMPLE && !dn && ou_dn && !ou_used && !ou_eat && fm1_ms - ou_t0 < HINT_MS && !ui.confirm &&
                  ((sgrid_on() && !fxl_sel) || acid_kon())) {
             acid_of(song.sel)->play = (uint8_t)!acid_kon();
             acid_follow();
@@ -3103,6 +3110,13 @@ static void ui_input(void)
         uint64_t held;
         if ((s = panel_enc(EN_K1 + k)) == 0)
             continue;
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+        if(!ui.home && pg->scope==SC_FM6 && gl_btn(B_OCTUP)) {
+            if(k==0u) tf6_ui_op=(uint8_t)clamp((int32_t)tf6_ui_op+s,0,5);
+            else if(k==1u && pg->id[0]==126u) tf6_ui_pitch=(uint8_t)(s>0);
+            ou_eat=1;ui.force=1;continue;
+        }
+#endif
         if (k == 0u && !ui.home && (str_eq(pg->title, "PIANO ROLL") || str_eq(pg->title, "QUICK FILL")) &&
             gl_btn(B_OCTUP)) {
             pr_mode(s);

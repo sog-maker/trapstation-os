@@ -6,6 +6,9 @@
 #include "eng_analog.c"
 #include "eng_sampler.c"
 #include "eng_mono.c"
+#if TRAP_FM6_TEST
+#include "eng_trap_fm6.c"
+#endif
 #define ICON_MUTE GBI_MUTE
 #define ICON_DELAY GBI_DELAY
 #define ICON_FADE GBI_FADE
@@ -24,7 +27,11 @@ static const uint16_t *const GB_ICONS[IC_COUNT] = {
     ICON_SQUARE, ICON_RANDOM, GBI_DELAY, ICON_VERB, GBI_MUTE, GBI_FADE, ICON_REPEAT, ICON_REVERSE, ICON_MACRO, ICON_SMP,
     ICON_SMP_ONCE, ICON_SMP_LOOP, ICON_SMP_PING, ICON_SMP_REV};
 
-static const engine_t *const ENGINES[NENGINES] = {&ENG_DIGITAL, &ENG_DIGITAL, &ENG_ANALOG, &ENG_SAMPLER, &ENG_MONO};
+static const engine_t *const ENGINES[NENGINES] = {&ENG_DIGITAL, &ENG_DIGITAL, &ENG_ANALOG, &ENG_SAMPLER, &ENG_MONO
+#if TRAP_FM6_TEST
+, &ENG_TRAP_FM6
+#endif
+};
 
 static inline uint32_t eng_idx(uint32_t e) { return e < NENGINES ? e : 0u; }
 
@@ -51,7 +58,7 @@ static const machine_t MACHINES[] = {
     {"8CYM", ENGI_ANALOG, AN_CYM, 1, AN_NOTE, AN_CYM, IC_CYMBAL},
     {"FMCYM", ENGI_DIGITAL, 4, 1, 72, 12, IC_CYMBAL},
     {"FMPRC", ENGI_DIGITAL, 5, 1, 48, 13, IC_PERC},
-    {"FMSYN", ENGI_DIGITAL, 0, 0, 60, 0, IC_SYN},
+    {"FMSYN", ENGI_SYNTH, 0, 0, 60, 0, IC_SYN},
     {"MONO", ENGI_MONO, 0, 0, 60, 0, IC_SAW},
     {"SMPL", ENGI_SAMPLER, 0, 2, SMP_NOTE, 0, IC_SAMPLE},
     {"8BAS", ENGI_ANALOG, AN_BASS, 1, AN_NOTE, AN_BASS, IC_KICK},

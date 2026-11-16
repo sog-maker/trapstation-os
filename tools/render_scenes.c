@@ -4,9 +4,12 @@
  * the pattern's steps, the scene masks. Starts the transport, switches the scenes (P_MUTE = not the mask bit,
  * as SCENE APPLY does), and writes the audible track as a WAV (16 bit, mono, 44.1 kHz).
  *
- *   cc -O1 -ffp-contract=off -w -DFELUCCA_FM4=1 -DFELUCCA_SIMPLE=1 -Ibuild/gen -Ifirmware/src -Iweb/emu -Iweb/emu/shim \
- *      -o build/render_scenes tools/render_scenes.c -lm
- *   build/render_scenes SPEC.txt OUT.wav
+ * Since 1.1: the engine name FM6 in a "track" line, and "f TRACK INDEX VALUE" lines for the 158 values of a
+ * track's FM6 voice (with -DTRAP_FM6_TEST=1 -DTRAP_UX_TEST=1).
+ *
+ *   cc -O1 -ffp-contract=off -fwrapv -w -DFELUCCA_FM4=1 -DFELUCCA_SIMPLE=1 -DTRAP_FM6_TEST=1 -DTRAP_UX_TEST=1 \
+ *      -Ibuild/gen -Ifirmware/src -Iweb/emu -Iweb/emu/shim -o build/render_scenes tools/render_scenes.c -lm
+ *   render_scenes SPEC.txt OUT.wav
  */
 #include <time.h>
 #include "felucca_web.c"
@@ -84,8 +87,18 @@ int main(int argc, char **argv)
         } else if (!strcmp(key, "track")) {
             int t; char e[16];
             if (fscanf(sp, "%d %15s", &t, e) != 2) return 2;
+            if (t < 1 || t > NTRK) return 2;
             trk[t - 1].eng_req = (uint8_t)(!strcmp(e, "ANALOG") ? ENGI_ANALOG : !strcmp(e, "SAMPLER") ? ENGI_SAMPLER
                                          : !strcmp(e, "MONO") ? ENGI_MONO : ENGI_DIGITAL);
+#if TRAP_FM6_TEST
+            if (!strcmp(e, "FM6")) trk[t - 1].eng_req = ENGI_FM6;
+        } else if (!strcmp(key, "f")) {
+            int t, i, v;
+            if (fscanf(sp, "%d %d %d", &t, &i, &v) != 3 || t < 1 || t > NTRK || i < 0 || i >= 158) return 2;
+            tf6_edit[t - 1][i] = (int16_t)v;
+            tf6_ready[t - 1] = 1;
+            tf6[t - 1].valid = 0;
+#endif
         } else if (!strcmp(key, "p")) {
             int t, i, v;
             if (fscanf(sp, "%d %d %d", &t, &i, &v) != 3) return 2;

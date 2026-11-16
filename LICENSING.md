@@ -19,6 +19,7 @@ distribute the firmware or firmware made from it, give your recipients its compl
 | What | Licence | Where |
 | --- | --- | --- |
 | The engine interface, shared DSP helpers and the generator of their tables, from [Felucca-Engines](https://github.com/hugelton/Felucca-Engines) | MIT | `firmware/src/engine.h`, `firmware/src/dsp.c`, `tools/gen_engine_tables.py`, `LICENSES/MIT-Felucca-Engines.txt` |
+| The FM6 synthesis core: msfa, from [Dexed](https://github.com/asb2m10/dexed) (Google Inc., Pascal Gauthier), in the integer C port by Leo Kuroshita | Apache-2.0 | `firmware/src/fm6_core.c`, `LICENSES/Apache-2.0-msfa.txt` |
 | The [Fukiai](https://github.com/hugelton/Fukiai) icon font, rasterised at build time | MIT | `assets/fonts/fukiai.ttf`, `LICENSES/MIT-Fukiai.txt` |
 | BLB Pixel 7 Chunky font by blairysbeatlab, rasterised at build time and used by the web pages | SIL OFL 1.1 | `assets/fonts/BLBPixel7-Chunky.ttf`, `LICENSES/OFL-BLBPixel7.txt` |
 | Inter Tight font by The Inter Project Authors, rasterised at build time | SIL OFL 1.1 | `assets/fonts/InterTight[wght].ttf`, `LICENSES/OFL-InterTight.txt` |

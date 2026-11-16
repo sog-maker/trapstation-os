@@ -12,6 +12,9 @@ static uint16_t gb_col[NTRK] = {GB_RGB(255, 42, 42), GB_RGB(253, 207, 61), GB_RG
                                 GB_RGB(138, 144, 150), GB_RGB(196, 2, 8)};
 
 typedef struct {
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+    uint8_t fm6_op, fm6_pitch;
+#endif
     uint8_t perf, mixer, mach, sel, ring, page, npages, mask, fade, rpt, hn, sv, flash;
     char msg[2][16];
     int16_t bpm;
@@ -368,6 +371,9 @@ static void gb_fill(gb_view_t *v)
     v->sel = (uint8_t)song.sel;
     v->bpm = song.g[G_BPM];
     v->play = (uint8_t)(song.playing != 0);
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+    if(pg->scope==SC_FM6) {v->fm6_op=tf6_ui_op;v->fm6_pitch=tf6_ui_pitch;}
+#endif
     if (v->play && str_eq(pg->title, "DELAY"))
         v->echo_ph = (uint8_t)(fm1_ms / 100u % 12u);
     v->hot = (uint8_t)(ui.hot_t ? ui.hot_col % 4u + 1u : 0u);
@@ -750,6 +756,13 @@ static void gb_fill(gb_view_t *v)
         }
         v->cur[k] = cur;
         param_format(d, cur, v->val[k], &u);
+#if TRAP_UX_TEST && TRAP_FM6_TEST
+        if(pg->scope==SC_FM6) {
+            uint32_t id=pg->id[k];
+            if(id==134u || id==144u || id==20u) fmt_int(v->val[k],cur+(id==134u?1:id==144u?-24:-7));
+            if(id==159u) {v->val[k][0]='0'+cur/4;v->val[k][1]=':';v->val[k][2]='0'+cur%4;v->val[k][3]=0;}
+        }
+#endif
         if (d->names == N_MDST)
             str_cpy(v->val[k], tm_name(TSEL, (uint32_t)cur % MD_N), sizeof v->val[k]);
         if (smp && vp >= TSEL->p && vp < TSEL->p + P_COUNT)
@@ -1005,6 +1018,9 @@ static void gb_overlay(const gb_view_t *v, uint16_t bgc, int direct)
     }
 }
 
+#if TRAP_UX_TEST
+static uint32_t ux_draw_ms, ux_anim_skipped;
+#endif
 static void gb_draw(void)
 {
     uint32_t i, s, mono, light, nstrip;
@@ -1019,6 +1035,17 @@ static void gb_draw(void)
         ;
     if (!ui.force && gb_have && i == sizeof gb_v)
         return;
+
+#if TRAP_UX_TEST
+    if(!ui.force && gb_have && fm1_ms-ux_draw_ms<33u) {
+        gb_view_t motion=gb_v;
+        motion.hit=gb_last.hit;motion.thit=gb_last.thit;motion.brd=gb_last.brd;
+        motion.fxang=gb_last.fxang;motion.echo_ph=gb_last.echo_ph;
+        motion.clk_ph=gb_last.clk_ph;
+        if(!memcmp(&motion,&gb_last,sizeof motion)) { ux_anim_skipped++;return; }
+    }
+    ux_draw_ms=fm1_ms;
+#endif
 
     {
         gb_view_t t = gb_v;

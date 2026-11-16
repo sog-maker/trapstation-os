@@ -9,6 +9,7 @@ optimizer, this script adds 'minsize' to those definitions, and the IR is then c
 (without the edit, that round trip is byte-identical to compiling felucca.c directly).
   size_fns.py IN.ll OUT.ll"""
 import re
+import os
 import sys
 from pathlib import Path
 
@@ -43,7 +44,10 @@ def definitions(text):
 
 def size_names():
     names = set()
-    for f in SIZE_FILES:
+    files = list(SIZE_FILES)
+    if os.environ.get("TRAP_FM6_TEST") == "1":
+        files += [p.name for p in SRC.glob("trap_*.c")] + ["gb_store.c", "ui_gb.c", "mirror.c", "smp_usb.c", "bk_usb.c"]
+    for f in files:
         names.update(definitions((SRC / f).read_text()))
     return names
 

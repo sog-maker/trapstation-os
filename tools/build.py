@@ -87,6 +87,8 @@ def tc_all(*cmds):
         return list(ex.map(lambda c: tc(*c), cmds))
 
 def generate():
+    import gen_trap_fm6
+    gen_trap_fm6.generate()
     """generated headers (UI fonts, icons, keycaps, palettes, tables)"""
     GEN.mkdir(parents=True, exist_ok=True)
     for old in ("felucca_font.h", "felucca_icons.h"):
@@ -177,7 +179,7 @@ def build_app():
     flags = [*CFLAGS, "-Ifirmware/hal", "-Ifirmware/src", "-Ibuild/gen"]
     for flag in ("FELUCCA_FLASH", "FELUCCA_OTA", "FELUCCA_OTA_DRYRUN", "FELUCCA_OTA_RAMONLY", "FELUCCA_CDC",
                  "FELUCCA_UART", "FELUCCA_UAC", "FELUCCA_UAC_TONE", "FELUCCA_UAC_48K", "FELUCCA_ICONS", "FELUCCA_SLICE", "FELUCCA_FM4",
-                 "FELUCCA_CDC_DEFAULT", "FELUCCA_UAC_AS_FIRST", "FELUCCA_CPU2"):
+                 "FELUCCA_CDC_DEFAULT", "FELUCCA_UAC_AS_FIRST", "FELUCCA_CPU2", "TRAP_FM6_TEST", "TRAP_UX_TEST"):
         v = os.environ.get(flag)
         if v in ("0", "1"):
             flags.append(f"-D{flag}={v}")
@@ -340,6 +342,8 @@ def mmio_check():
     return errors
 
 def main():
+    os.environ.setdefault("TRAP_FM6_TEST", "1")
+    os.environ.setdefault("TRAP_UX_TEST", "1")
     global PRODUCT, VERSION
     ap = argparse.ArgumentParser()
     ap.add_argument("--release", metavar="X.Y", help="release build: identity FM-1_5XY, version string vX.Y")
@@ -388,6 +392,9 @@ def main():
         app = f"felucca-{a.release}-app.bin"
         (rel / name).write_bytes(pkg)
         (rel / app).write_bytes(img)
+        if os.environ.get("TRAP_FM6_TEST") == "1":
+            shutil.copy2(OUT / "felucca.elf", rel / "felucca.elf")
+            shutil.copy2(OUT / "felucca.dis", rel / "felucca.dis")
         (rel / "SHA256SUMS").write_text("".join(f"{hashlib.sha256(b).hexdigest()}  {n}\n"
                                                 for n, b in ((name, pkg), (app, bytes(img)))))
         for f in sorted((SRC / "LICENSES").glob("*.txt")):
