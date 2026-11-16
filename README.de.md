@@ -22,7 +22,7 @@ Pads und Leads, zwölf neue Sound-Seiten, Undo und eine überarbeitete Desktop-A
 
 <p align="center"><b>Neu bei TRAPSTATION?</b> Lies die <a href="docs/manual/de/Trapstation-Guide-DE.pdf">Anleitung</a>
 (<a href="docs/manual/en/Trapstation-Guide-EN.pdf">English</a>) und leg dir den
-<a href="docs/cheatsheet/Trapstation-Cheat-Sheet.pdf">Spickzettel</a> neben das Gerät.<br>
+<a href="docs/cheatsheet/Trapstation-Cheat-Sheet-DE.pdf">Spickzettel</a> neben das Gerät.<br>
 <b>Am Computer:</b> <a href="https://github.com/sog-maker/trapstation-desktop">Trap Station Desktop</a> macht aus Audiodateien
 Samples, bearbeitet die FM6-Sounds, spiegelt den Bildschirm und exportiert deine Jam nach Ableton Live.</p>
 
@@ -248,7 +248,7 @@ Alle Bildschirme des Designs, alle 154 Ansichten: [docs/design](docs/design/).
 | **OCT− / OCT+** | Oktave; OCT+ gehalten ist die Umschalttaste (Piano-Roll-Modus, Sampler-Sätze, Effektkanal) |
 
 Die vollständige Liste, Seite für Seite: die [Anleitung](docs/manual/de/USER_GUIDE.md) und der
-[Spickzettel](docs/cheatsheet/Trapstation-Cheat-Sheet.pdf).
+[Spickzettel](docs/cheatsheet/Trapstation-Cheat-Sheet-DE.pdf).
 
 ## Desktop-App
 
@@ -272,7 +272,7 @@ Die vollständige Liste, Seite für Seite: die [Anleitung](docs/manual/de/USER_G
 | Schnellstart | [QUICKSTART.md](docs/manual/de/QUICKSTART.md) | [QUICKSTART.md](docs/manual/en/QUICKSTART.md) |
 | Performance-Seite | [PERFORMANCE.md](docs/manual/de/PERFORMANCE.md) | [PERFORMANCE.md](docs/manual/en/PERFORMANCE.md) |
 | Die FM6-Sound-Seiten (neu in 1.1) | [FM6.md](docs/manual/de/FM6.md) | [FM6.md](docs/manual/en/FM6.md) |
-| Spickzettel | [Trapstation-Cheat-Sheet.pdf](docs/cheatsheet/Trapstation-Cheat-Sheet.pdf) | |
+| Spickzettel | [Trapstation-Cheat-Sheet-DE.pdf](docs/cheatsheet/Trapstation-Cheat-Sheet-DE.pdf) | [Trapstation-Cheat-Sheet.pdf](docs/cheatsheet/Trapstation-Cheat-Sheet.pdf) |
 | Designreferenz | [docs/design](docs/design/) | |
 | Änderungen | [CHANGELOG.md](CHANGELOG.md) | |
 

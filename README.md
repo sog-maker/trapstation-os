@@ -262,7 +262,7 @@ The full list, page by page: the [user guide](docs/manual/en/USER_GUIDE.md) and 
 | Quick start | [QUICKSTART.md](docs/manual/en/QUICKSTART.md) | [QUICKSTART.md](docs/manual/de/QUICKSTART.md) |
 | Performance page | [PERFORMANCE.md](docs/manual/en/PERFORMANCE.md) | [PERFORMANCE.md](docs/manual/de/PERFORMANCE.md) |
 | The FM6 sound pages (new in 1.1) | [FM6.md](docs/manual/en/FM6.md) | [FM6.md](docs/manual/de/FM6.md) |
-| Cheat sheet | [Trapstation-Cheat-Sheet.pdf](docs/cheatsheet/Trapstation-Cheat-Sheet.pdf) | |
+| Cheat sheet | [Trapstation-Cheat-Sheet.pdf](docs/cheatsheet/Trapstation-Cheat-Sheet.pdf) | [Trapstation-Cheat-Sheet-DE.pdf](docs/cheatsheet/Trapstation-Cheat-Sheet-DE.pdf) |
 | Design reference | [docs/design](docs/design/) | |
 | Changes | [CHANGELOG.md](CHANGELOG.md) | |
 
