@@ -1,5 +1,18 @@
 # Changelog
 
+## TRAPSTATION OS 1.1.0.2 (2026-11-16) – kits with FM6 tracks
+
+### Fixed
+- **Kits and sound slots with FM6 tracks:** in 1.1.0.0 and 1.1.0.1 a single FM6 track blocked saving and loading kits
+  and user sounds (`FM6: USE PROJECT SAVE`), and choosing a kit on the start menu kept the last jam while the screen
+  said `KIT LOADED`. Now they save and load: a kit or sound keeps the FM6 preset of a track (by the voice's name) and
+  the track's settings. Changes on the FM6 pages stay in the last jam; Trap Station Desktop's Read FM-1 tracks keeps
+  them on the computer.
+- `KIT LOADED` on the start menu only when the kit was loaded.
+
+Identity `FM-1_511`. Kits and sounds keep their format (an FM6 track's preset rides in a byte no value uses); the
+last jam is the same as in 1.1.0.1.
+
 ## TRAPSTATION OS 1.1.0.1 (2026-11-16) – the last jam fits again
 
 ### Fixed

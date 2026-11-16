@@ -46,9 +46,17 @@ oder Patterns, dann dieses. Auf dem Bildschirm steht `UNDO` oder `NOTHING TO UND
 ## Speichern
 
 Ein FM6-Sound wird mit der Jam gespeichert. Die sichert der FM-1 von selbst, kurz nachdem du ihn nicht mehr berührst,
-und holt sie beim Einschalten zurück. Solange eine Spur einen FM6-Sound spielt, speichern und laden die eigenen
-Sound-Plätze und die Kits nicht: Auf dem Bildschirm steht `FM6: USE PROJECT SAVE`. Eine Jam aus 1.0.0.0 lädt 1.1.0.0
-nicht.
+und holt sie beim Einschalten zurück. Eine Jam aus 1.0.0.0 lädt 1.1.0.0 nicht.
+
+Seit 1.1.0.2 speichern und laden die eigenen Sound-Plätze und die Kits auch FM6-Spuren. Sie merken sich, welches
+FM6-Preset eine Spur spielt (MEMPHIS BELL, DARK LEAD …), und die Einstellungen der Spur, aber nicht, was du auf den zwölf
+FM6-Seiten verändert hast: Beim Laden des Kits kommt das Preset so zurück, wie es ausgeliefert wird. Diese Änderungen
+stehen nur in der Jam.
+
+**Einen eigenen Sound behalten:** Nach der Session den FM-1 an [Trap Station Desktop](https://github.com/sog-maker/trapstation-desktop)
+anschließen und **Read FM-1 tracks** klicken, bevor du ein anderes Kit lädst oder die Jam änderst. Die App legt die
+FM6-Sounds der sechs Spuren unter **My sounds** ab und kann sie als DX7-Dateien exportieren. Zurück auf den FM-1 schickt
+sie sie noch nicht.
 
 ## Am Computer
 

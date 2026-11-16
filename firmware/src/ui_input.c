@@ -2643,8 +2643,8 @@ static void bm_input(uint32_t pressed)
             bm_on = 1;
         else if (((pressed >> panel.btn[B_OCTUP]) & 1u) && gbk_used(bm_kit)) {
             bm_close();
-            (void)gbk_load(bm_kit);
-            ui_message("KIT LOADED");
+            if (gbk_load(bm_kit))
+                ui_message("KIT LOADED");
         }
         ui.force = 1;
         return;

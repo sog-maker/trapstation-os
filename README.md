@@ -13,8 +13,8 @@ live performance page</p>
   <a href="https://sog-maker.github.io/trapstation-os/"><img src="https://img.shields.io/badge/install-in%20the%20browser-c62d39" alt="Install in the browser"></a>
 </p>
 
-<p align="center"><b>New in 1.1.0.1:</b> the last jam no longer fills up (`LAST JAM FULL` in 1.1.0.0): please update ·
-<a href="https://github.com/sog-maker/trapstation-os/releases/tag/v1.1.0.1">the release notes</a></p>
+<p align="center"><b>New in 1.1.0.2:</b> kits save and load again with FM6 tracks; 1.1.0.1 fixed `LAST JAM FULL` ·
+<a href="https://github.com/sog-maker/trapstation-os/releases/tag/v1.1.0.2">the release notes</a></p>
 
 <p align="center"><b>New in 1.1:</b> a new six-operator FM engine, 22 reworked keys, bells, organs, pads and leads,
 twelve new sound pages, Undo, and a reworked desktop app · <a href="#whats-new-in-1100">what's new</a> ·
@@ -37,6 +37,14 @@ your fingers. Every page draws what its knobs do, in one red-and-grey Workstatio
 TRAPSTATION OS is free software, a fork of [BBL JAM BOX](https://github.com/UnkleBlairy/BBL-JAM-BOX) by Blair, itself
 built on [Felucca](https://github.com/hugelton/Felucca) by Hügelton Instruments. It is not BBL JAM BOX and not Felucca:
 please report its behaviour [here](https://github.com/sog-maker/trapstation-os/issues).
+
+## What's new in 1.1.0.2
+
+- **Kits save and load again with FM6 tracks.** In 1.1.0 a single FM6 track blocked saving and loading kits and sound
+  slots (`FM6: USE PROJECT SAVE`); on the start menu the kit list seemed to load the last jam. Now a kit keeps which
+  FM6 preset each track plays. Changes on the FM6 pages stay in the jam: keep them with Trap Station Desktop's
+  **Read FM-1 tracks** ([details](docs/manual/en/FM6.md#saving)).
+- `KIT LOADED` shows only when the kit was loaded.
 
 ## What's new in 1.1.0.1
 
@@ -67,8 +75,8 @@ please report its behaviour [here](https://github.com/sog-maker/trapstation-os/i
 
 **Before you update from 1.0.0.0:** back up in the installer first. Samples, user sounds and kits stay on the FM-1.
 The last jam of 1.0.0.0 is not loaded by 1.1.0.0 (the jam now carries the FM6 sounds), so the FM-1 starts with a fresh
-one. An FM6 sound is kept with the jam: while a track plays one, the user sound slots and the kits do not save or load
-(the screen says `FM6: USE PROJECT SAVE`).
+one. An FM6 sound is kept with the jam; since 1.1.0.2 kits and sound slots keep the FM6 preset of a track, not the
+changes made on the FM6 pages ([how to keep those](docs/manual/en/FM6.md#saving)).
 
 ## Install
 
@@ -81,12 +89,12 @@ your sounds, kits, last jam and samples to a file, and puts them back.
 **From The Firmware Hub:** TRAPSTATION is submitted to [thefirmwarehub.com](https://thefirmwarehub.com/), which installs
 firmwares in one click and switches between them.
 
-**With Python 3:** download `trapstation-os-1.1.0.1.fwsc` from the [latest release](https://github.com/sog-maker/trapstation-os/releases/latest)
+**With Python 3:** download `trapstation-os-1.1.0.2.fwsc` from the [latest release](https://github.com/sog-maker/trapstation-os/releases/latest)
 and, with this repository's `tools/` folder,
 
 ```
 pip install mido python-rtmidi
-python tools/fm1_install.py trapstation-os-1.1.0.1.fwsc
+python tools/fm1_install.py trapstation-os-1.1.0.2.fwsc
 ```
 
 **Connecting:** a USB **data** cable, straight into the computer (no hub, dock or monitor port), other music apps closed.
@@ -273,10 +281,10 @@ On Linux x86-64 or Ubuntu under WSL, with the JieLi toolchain and the AC79 SDK:
 ```
 tools/get_toolchain.sh
 git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git ~/fw-AC79_AIoT_SDK
-./build.sh --release 1.1.0.1
+./build.sh --release 1.1.0.2
 ```
 
-The tag `v1.1.0.1` builds the released package byte for byte. Everything else, the local installer and the online
+The tag `v1.1.0.2` builds the released package byte for byte. Everything else, the local installer and the online
 installer included: [docs/developer](docs/developer/).
 
 ## If the FM-1 does not start

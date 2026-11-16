@@ -50,6 +50,17 @@ static void tf6_load(uint32_t tr, uint32_t slot)
     tf6[tr].low=tf6[tr].post=0;
 }
 
+static uint32_t tf6_slot_of(uint32_t tr)
+{
+    uint32_t s, i;
+    tr %= NTRK;
+    for (s=0;s<TF6_COUNT;s++) {
+        for (i=145u;i<155u && tf6_edit[tr][i]==TF6_PATCH[s][i];i++) ;
+        if (i==155u) return s;
+    }
+    return TF6_COUNT;
+}
+
 static void tf6_sync(track_t *t)
 {
     uint32_t tr=(uint32_t)(t-trk), i, j;

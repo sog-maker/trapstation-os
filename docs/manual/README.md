@@ -1,6 +1,6 @@
 # TRAPSTATION OS – user guide / Anleitung
 
-Release 1.1.0.1. The guides and the cheat sheet describe 1.0.0.0; what 1.1 adds is on the FM6 page.
+Release 1.1.0.2. The guides and the cheat sheet describe 1.0.0.0; what 1.1 adds is on the FM6 page.
 
 | | English | Deutsch |
 |---|---|---|

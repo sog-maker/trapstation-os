@@ -13,8 +13,8 @@ und eine Live-Performance-Seite</p>
   <a href="https://sog-maker.github.io/trapstation-os/"><img src="https://img.shields.io/badge/install-im%20Browser-c62d39" alt="Im Browser installieren"></a>
 </p>
 
-<p align="center"><b>Neu in 1.1.0.1:</b> die letzte Jam läuft nicht mehr voll (`LAST JAM FULL` in 1.1.0.0): bitte aktualisieren ·
-<a href="https://github.com/sog-maker/trapstation-os/releases/tag/v1.1.0.1">die Release-Notes</a></p>
+<p align="center"><b>Neu in 1.1.0.2:</b> Kits speichern und laden wieder mit FM6-Spuren; 1.1.0.1 behob `LAST JAM FULL` ·
+<a href="https://github.com/sog-maker/trapstation-os/releases/tag/v1.1.0.2">die Release-Notes</a></p>
 
 <p align="center"><b>Neu in 1.1:</b> eine neue FM-Engine mit sechs Operatoren, 22 überarbeitete Keys, Bells, Orgeln,
 Pads und Leads, zwölf neue Sound-Seiten, Undo und eine überarbeitete Desktop-App · <a href="#neu-in-1100">was neu ist</a> ·
@@ -38,6 +38,14 @@ Workstation-Design.
 TRAPSTATION OS ist freie Software, ein Fork von [BBL JAM BOX](https://github.com/UnkleBlairy/BBL-JAM-BOX) von Blair, das
 auf [Felucca](https://github.com/hugelton/Felucca) von Hügelton Instruments aufbaut. Es ist weder BBL JAM BOX noch
 Felucca: Fehler bitte [hier](https://github.com/sog-maker/trapstation-os/issues) melden.
+
+## Neu in 1.1.0.2
+
+- **Kits speichern und laden wieder mit FM6-Spuren.** In 1.1.0 hat schon eine FM6-Spur das Speichern und Laden von Kits
+  und Sound-Plätzen gesperrt (`FM6: USE PROJECT SAVE`); im Startmenü schien die Kit-Liste die letzte Jam zu laden. Jetzt
+  merkt sich ein Kit, welches FM6-Preset jede Spur spielt. Änderungen auf den FM6-Seiten bleiben in der Jam: behalten
+  kannst du sie mit **Read FM-1 tracks** in Trap Station Desktop ([Details](docs/manual/de/FM6.md#speichern)).
+- `KIT LOADED` erscheint nur, wenn das Kit geladen wurde.
 
 ## Neu in 1.1.0.1
 
@@ -70,8 +78,8 @@ Felucca: Fehler bitte [hier](https://github.com/sog-maker/trapstation-os/issues)
 
 **Vor dem Update von 1.0.0.0:** erst im Installer sichern. Samples, eigene Sounds und Kits bleiben auf dem FM-1. Die
 letzte Jam von 1.0.0.0 lädt 1.1.0.0 nicht (die Jam enthält jetzt die FM6-Sounds), der FM-1 startet also mit einer
-frischen. Ein FM6-Sound wird mit der Jam gespeichert: Solange eine Spur einen spielt, speichern und laden die eigenen
-Sound-Plätze und die Kits nicht (auf dem Bildschirm steht `FM6: USE PROJECT SAVE`).
+frischen. Ein FM6-Sound wird mit der Jam gespeichert; seit 1.1.0.2 merken sich Kits und Sound-Plätze das FM6-Preset
+einer Spur, nicht die Änderungen auf den FM6-Seiten ([so behältst du sie](docs/manual/de/FM6.md#speichern)).
 
 ## Installieren
 
@@ -84,12 +92,12 @@ Seite speichert Sounds, Kits, die letzte Jam und die Samples in eine Datei und s
 **Über The Firmware Hub:** TRAPSTATION ist bei [thefirmwarehub.com](https://thefirmwarehub.com/) eingereicht; der Hub
 installiert Firmwares mit einem Klick und wechselt zwischen ihnen.
 
-**Mit Python 3:** `trapstation-os-1.1.0.1.fwsc` aus dem [aktuellen Release](https://github.com/sog-maker/trapstation-os/releases/latest)
+**Mit Python 3:** `trapstation-os-1.1.0.2.fwsc` aus dem [aktuellen Release](https://github.com/sog-maker/trapstation-os/releases/latest)
 laden und mit dem Ordner `tools/` dieses Repos:
 
 ```
 pip install mido python-rtmidi
-python tools/fm1_install.py trapstation-os-1.1.0.1.fwsc
+python tools/fm1_install.py trapstation-os-1.1.0.2.fwsc
 ```
 
 **Verbinden:** ein USB-**Daten**kabel, direkt am Computer (kein Hub, Dock oder Monitor-Anschluss), andere Musikprogramme
@@ -283,10 +291,10 @@ Unter Linux x86-64 oder Ubuntu in WSL, mit der JieLi-Toolchain und dem AC79-SDK:
 ```
 tools/get_toolchain.sh
 git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git ~/fw-AC79_AIoT_SDK
-./build.sh --release 1.1.0.1
+./build.sh --release 1.1.0.2
 ```
 
-Der Tag `v1.1.0.1` baut das veröffentlichte Paket bytegleich. Alles Weitere, auch der lokale und der Online-Installer:
+Der Tag `v1.1.0.2` baut das veröffentlichte Paket bytegleich. Alles Weitere, auch der lokale und der Online-Installer:
 [docs/developer](docs/developer/).
 
 ## Wenn der FM-1 nicht startet

@@ -202,6 +202,8 @@ static void gb_store_poll(void)
 }
 
 #define GB_SN_MARK 0x5A
+#define GB_F6_MARK 100
+_Static_assert(GB_F6_MARK > 63 && GB_F6_MARK + TF6_COUNT <= 127, "an FM6 slot mark never reads as a value");
 static void gb_snd_take(gb_snd_t *s, const track_t *t)
 {
     uint32_t i;
@@ -217,6 +219,11 @@ static void gb_snd_take(gb_snd_t *s, const track_t *t)
     s->p[P_SSWING] = (int8_t)lastn[i][1];
     s->p[P_SGATE] = (int8_t)lastn[i][2];
     s->p[P_SQNT] = (int8_t)lastn[i][3];
+#if TRAP_FM6_TEST
+
+    if (t->eng_req == ENGI_FM6)
+        s->p[P_APROB] = (int8_t)(GB_F6_MARK + (tf6_slot_of(i) < TF6_COUNT ? tf6_slot_of(i) : 0u));
+#endif
 }
 
 static void gb_snd_put(const gb_snd_t *s, track_t *t)
@@ -232,6 +239,12 @@ static void gb_snd_put(const gb_snd_t *s, track_t *t)
     motion_restore(t);
     fm1_irq_off();
     t->eng_req = s->used == 2u ? ENGI_ANALOG : s->used == 3u ? ENGI_SAMPLER : s->used == 4u ? ENGI_MONO : ENGI_DIGITAL;
+#if TRAP_FM6_TEST
+    if (s->used == 1u && P_APROB < np && s->p[P_APROB] >= GB_F6_MARK && s->p[P_APROB] < GB_F6_MARK + (int)TF6_COUNT) {
+        t->eng_req = ENGI_FM6;
+        tf6_load(trk_index(t), (uint32_t)(s->p[P_APROB] - GB_F6_MARK));
+    }
+#endif
     t->p[P_E7] = out[P_E7];
     for (i = 0; i < P_COUNT; i++)
         if (gb_sound_id(i))
@@ -254,7 +267,6 @@ static int gbk_used(uint32_t k) { gb_store_init(); return k < GB_KITS && (gb_kit
 static int gbs_save_sound(uint32_t slot)
 {
     uint32_t m = gb_mach_of(TSEL);
-    if(TRAP_FM6_TEST && TSEL->eng_req==ENGI_FM6) { ui_message("FM6: USE PROJECT SAVE"); return 0; }
     gb_store_init();
     xf_save(1);
     gb_snd_take(gb_slot(m, slot), TSEL);
@@ -341,7 +353,6 @@ static int gbk_save(uint32_t k)
     uint32_t i;
     if (k >= GB_KITS)
         return 0;
-    for(i=0;TRAP_FM6_TEST && i<NTRK;i++) if(trk[i].eng_req==ENGI_FM6) { ui_message("FM6: USE PROJECT SAVE"); return 0; }
     gb_store_init();
     kt = gb_kit(k);
     memset(kt, 0, sizeof *kt);
@@ -377,7 +388,6 @@ static int gbk_load(uint32_t k)
     uint32_t i;
     if (k >= GB_KITS)
         return 0;
-    for(i=0;TRAP_FM6_TEST && i<NTRK;i++) if(trk[i].eng_req==ENGI_FM6) { ui_message("FM6: USE PROJECT SAVE"); return 0; }
     gb_store_init();
     kt = gb_kit(k);
     if (!kt->used && !trap_kit_has(k)) {

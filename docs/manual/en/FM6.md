@@ -46,8 +46,15 @@ is taken back instead. The screen says `UNDO`, or `NOTHING TO UNDO`. It is one s
 ## Saving
 
 An FM6 sound is kept with the jam, which the FM-1 saves by itself a moment after you stop touching it, and brings back
-at power-on. While a track plays an FM6 sound, the user sound slots and the kits do not save or load: the screen says
-`FM6: USE PROJECT SAVE`. A jam made with 1.0.0.0 is not loaded by 1.1.0.0.
+at power-on. A jam made with 1.0.0.0 is not loaded by 1.1.0.0.
+
+Since 1.1.0.2 the user sound slots and the kits save and load FM6 tracks too. They keep which FM6 preset a track plays
+(MEMPHIS BELL, DARK LEAD …) and the track's settings, but not what you changed on the twelve FM6 pages: loading the kit
+brings the preset back as it ships. Those changes live in the jam only.
+
+**Keep a sound you made:** after the session, connect the FM-1 to [Trap Station Desktop](https://github.com/sog-maker/trapstation-desktop)
+and click **Read FM-1 tracks** before you load another kit or change the jam. The app keeps the FM6 sounds of the six
+tracks under **My sounds** and can export them as DX7 files. It does not send them back to the FM-1 yet.
 
 ## On the computer
 
